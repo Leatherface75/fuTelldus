@@ -29,7 +29,7 @@
 
 	<meta charset="utf-8">
     <title><?php echo $config['pagetitle']; ?></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -102,11 +102,12 @@
 
 
 		<!-- HEADER: MOBILE -->
-		<div class="masthead visible-phone" style='background-color:#0088cc; margin:-20px -20px 15px -20px'>
+		<div class="masthead visible-phone" style='background-color:#1919D1; margin:-20px -20px 15px -20px'>
 			<div style='padding:5px 5px;'>
 
 				<div class="pull-left" style='font-size:22px; font-weight:bold; color:#fff; padding:3px 5px;'>
 					<a style='color:#fff;' href='index.php'>
+						<img style='height:30px;' src="../images/logo.png" alt="brand" />
 						<?php echo $config['pagetitle']; ?>
 					</a>
 				</div>
@@ -117,7 +118,14 @@
 				    <span class="caret"></span>
 				  </a>
 				  <ul class="dropdown-menu">
-				    <li><a href='login'><?php echo $lang['Login']; ?></a></li>
+					<?php
+					if (isset($_SESSION['fuTelldus_user_loggedin'])) {
+						echo "<li><a href='../index.php'>".$lang['Admin']."</a></li>";
+						echo "<li><a href='../login/logout.php'>".$lang['Log out']."</a></li>";
+					} else {
+						echo "<li><a href='../login/'>{$lang['Login']}</a></li>";
+					}
+					?>
 				  </ul>
 				</div>
 
@@ -134,15 +142,15 @@
 		<div class="masthead hidden-phone">
 			
 			<h3 class="muted">
-				<a href='index.php'>
-					<img style='height:30px;' src="../images/logo.jpg" alt='logo' />
+				<a href='index.php' style='color: #1919D1;'>
+					<img style='height:30px;' src="../images/logo.png" alt="brand" />
 					<?php echo $config['pagetitle']; ?>
 				</a>
 			</h3>
 
 			<div style="float:right; margin-top:-45px; margin-right:15px;">
 				<div class="btn-group">					
-					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					<a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
 						<?php
 							if (isset($_SESSION['fuTelldus_user_loggedin'])) {
 								echo $user['mail'];
@@ -156,7 +164,7 @@
 					<ul class="dropdown-menu">
 						<?php
 							if (isset($_SESSION['fuTelldus_user_loggedin'])) {
-								echo "<li><a href='../login/'>".$lang['Admin']."</a></li>";
+								echo "<li><a href='../index.php'>".$lang['Admin']."</a></li>";
 								echo "<li><a href='../login/logout.php'>".$lang['Log out']."</a></li>";
 							} else {
 								echo "<li><a href='../login/'>".$lang['Login']."</a></li>";
@@ -179,8 +187,8 @@
 		<div class='clearfix'></div>
 
 		<div class='hidden-phone' style='text-align:center; border-top:1px solid #eaeaea; font-size:10px; margin-top:35px; color:#c7c7c7;'>
-			Developed by <a href='http://www.fosen-utvikling.no'>Fosen Utvikling</a> &nbsp;&nbsp;
-			Last load: <?php echo date("d-m-Y H:i"); ?>
+			Developed by <a href='http://www.fosen-utvikling.no'>Fosen Utvikling</a> &nbsp;&nbsp;|&nbsp;&nbsp; Modifications by <a href='http://www.mackapaer.se'>csoM Solutions</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="mailto:<?php echo $config['mail_from'] ?>">Support</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			Last load: <?php echo date("Y-m-d H:i"); ?>
 
 			<br />
 			This work is licensed under a <a href='http://creativecommons.org/licenses/by-nc/3.0/'>Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.

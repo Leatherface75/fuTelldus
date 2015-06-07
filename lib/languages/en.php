@@ -13,13 +13,13 @@ $lang = array(
 	"Sensors" => "Sensors",
 	"Chart" => "Chart",
 	"Report" => "Report",
-	"Lights" => "Lights",
+	"Lights" => "Devices",
 	"Settings" => "Settings",
 	"Log out" => "Log out",
 
 	"Page settings" => "Page settings",
 	"Users" => "Users",
-	"Shared sensors" => "Delte sensorer",
+	"Shared sensors" => "Shared sensors",
 	"Test cron-files" => "Test cron-files",
 	"View public page" => "View public page",
 	"View public sensors" => "View public sensors",
@@ -31,6 +31,7 @@ $lang = array(
 	"Userprofile" => "Userprofile",
 	"My profile" => "My profile",
 	"Not logged in" => "Not logged in",
+        "Last_active" => "Last activity",
 	
 
 	// Messages
@@ -45,7 +46,10 @@ $lang = array(
 	"Nothing to display" => "Nothing to display",
 	"Data saved" => "Data saved",
 	"Deleted" => "Deleted",
-
+        "Sensor added to ignored" => "Sensor ignored",
+	"Sensor removed" => "Sensor borttagen",
+        "Sensor removed ignored" => "Sensor removed ignored",
+        
 	
 	// Form
 	"Login" => "Login",
@@ -69,6 +73,7 @@ $lang = array(
 	"XML URL" => "XML URL",
 	"Description" => "Description",
 	"Outgoing mailaddress" => "Outgoing mailaddress",
+        "Log_activity" => "Log latest activity",
 	"Select chart" => "Select chart",
 	"Default chart" => "Default chart",
 	"Chart max days" => "View chart for max days back in time",
@@ -83,6 +88,14 @@ $lang = array(
 	"Telldus connection test" => "Telldus connection test",
 	"Sync lists everytime" => "Sync lists everytime",
 	"List synced" => "List synced",
+        
+	// Pushover
+	"Pushover appkey" => "Pushover app-key",
+	"Pushover userkey" => "Pushover user-key",
+        "Push notifications" => "Push notifications",
+        "Push notification" => "Device %%device%% has been activated.",
+	"Push mail_notification" => "Warning: The value is %%value%% on sensor %%sensor%%.",
+        "Push message" => "Push message",
 
 
 	// Temperature & chart
@@ -92,6 +105,7 @@ $lang = array(
 	"Combine charts" => "Combine charts",
 	"Split charts" => "Split charts",
 	"View chart" => "View chart",
+        "Chart_type" => "Chart type",
 
 
 	// Sensors
@@ -99,9 +113,11 @@ $lang = array(
 	"Sensorname" => "Sensorname",
 	"Sensordata" => "Sensordata",
 	"Sensor ID" => "Sensor ID",
-	"Sensors description" => "<p>Add your sensors to the cronjob for logging the sensordata into database.</p><p>Sensorlist is retrieved with keys added under <a href='?page=settings&view=user'>your userprofile</a>.</p>",
+	"Sensors description" => "<p>Add your sensors to the cronjob for logging the sensordata into database.</p><p>Sensorlist is retrieved with keys added under <a href='?page=settings&view=user&action=edit&id={$user['user_id']}'>your userprofile</a>.</p>",
 	"Non public" => "Non public",
 	"Public" => "Public",
+        "Ignore" => "Ignore",
+        "Activate" => "Activate",
 
 
 	// Shared sensors
@@ -135,10 +151,27 @@ $lang = array(
 	"Off" => "Off",
 	"Groups" => "Groups",
 	"Devices" => "Devices",
-	
+        "Device History" => "Device history for",
+        "State" => "State",
+   
+   
+
+        // Events
+        "Events" => "Events",
+        "Schedules" => "Schedules",
+        "Device" => "Device",
+        "Weekdays" => "Weekdays",
+        "Monday" => "Monday",
+        "Tuesday" => "Tuesday",
+        "Wednesday" => "Wednesday",
+        "Thursday" => "Thursday",
+        "Friday" => "Friday",
+        "Saturday" => "Saturday",
+        "Sunday" => "Sunday",
 
 
 	// Div
+        "Link Webapp" => "Link to create webapp on mobile devices",
 	"Language" => "Language",
 	"New" => "New",
 	"Repeat" => "Repeat",

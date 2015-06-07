@@ -1,3 +1,9 @@
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
+
 <?php
 	
 	/* Get parameters
@@ -102,8 +108,10 @@
 					echo "<div class='controls'>";
 
 						echo "<label class='checkbox'>";
-							if ($selectedUser['admin'] == 1) $adminChecked = "checked='checked'";
-				          echo "<input type='checkbox' name='admin' value='1' $adminChecked> " . $lang['Admin'];
+							if ($selectedUser['admin'] == 1)
+								$adminChecked = "checked='checked'";
+								echo "<input type='checkbox' name='admin' value='1' $adminChecked> " . $lang['Admin'];
+
 				        echo "</label>";
 
 					echo "</div>";
@@ -113,7 +121,16 @@
 		?>
 
 	</fieldset>
-
+	
+	<?php if ($action == "edit") { ?>
+	<fieldset style="border: 1px dotted;">
+	    <?php
+	    $webapplink = constant('BASE_URL') . "?webapp=" . hash('sha256', $selectedUser['user_id']);
+	    echo $lang['Link Webapp'].":<br>";
+	    echo "<a href='{$webapplink}'>{$webapplink}</a>";
+	    ?>
+	</fieldset>
+	<?php } ?>
 
 	<?php
 		echo "<fieldset>";
@@ -125,11 +142,11 @@
 					echo "<label class='selectChart'>";
 						echo "<select name='selectChart'>";
 
-							if ($selectedUser['chart_type'] == "rggraph") $selectedChartRGraph = "selected='selected'";
+							if ($selectedUser['chart_type'] == "rgraph") $selectedChartRGraph = "selected='selected'";
 							elseif ($selectedUser['chart_type'] == "highcharts") $selectedChartHighchart = "selected='selected'";
-							else $selectedChartRGraph = "selected='selected'";
+							else $selectedDefaultGraph = "selected='selected'";
 
-							echo "<option value='' $selectedChartRGraph>{$lang['Default chart']}</option>";
+							echo "<option value='' $selectedDefaultGraph>{$lang['Default chart']}</option>";
 							echo "<option value='rgraph' $selectedChartRGraph>RGraph</option>";
 							echo "<option value='highcharts' $selectedChartHighchart>Highcharts</option>";
 						echo "</select>";
@@ -158,7 +175,7 @@
 								list($filename, $ext) = explode(".", $file);
 
 								if ($ext == "php") {
-									if ($defaultLang == $filename)
+									if ($selectedUser['language'] == $filename)
 										echo "<option value='$filename' selected='selected'>$filename</option>";
 
 									else
@@ -200,7 +217,6 @@
 
 		?>
 
-
 		<div class="control-group">
 			<label class="control-label" for="public_key"><?php echo $lang['Public key']; ?></label>
 			<div class="controls">
@@ -226,6 +242,22 @@
 			<label class="control-label" for="token_secret_key"><?php echo $lang['Token secret']; ?></label>
 			<div class="controls">
 				<input style='width:350px;' type="text" name='token_secret_key' id="token_secret_key" placeholder="<?php echo $lang['Token secret']; ?>" value='<?php echo $selectedUserTelldusConf['token_secret']; ?>'>
+			</div>
+		</div>
+		
+		<legend>PushOver</legend>
+		
+		<div class="control-group">
+			<label class="control-label" for="push_user"><?php echo $lang['Pushover userkey']; ?></label>
+			<div class="controls">
+				<input style='width:350px;' type="text" name='push_user' id="push_user" placeholder="<?php echo $lang['Pushover userkey']; ?>" value='<?php echo $selectedUserTelldusConf['push_user']; ?>' data-toggle="tooltip" title="Go to pushover.net and get an account.">
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label" for="push_app"><?php echo $lang['Pushover appkey']; ?></label>
+			<div class="controls">
+				<input style='width:350px;' type="text" name='push_app' id="push_app" placeholder="<?php echo $lang['Pushover appkey']; ?>" value='<?php echo $selectedUserTelldusConf['push_app']; ?>' data-toggle="tooltip" title="Go to pushover.net and get an account.">
 			</div>
 		</div>
 

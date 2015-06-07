@@ -146,7 +146,7 @@
 					echo "<td>".$lang['Last update']."</td>";
 					echo "<td>";
 						$lastUpdate = trim($xmldata->lastUpdated);
-						echo date("H:i:s d-m-y", $lastUpdate) . " &nbsp; (" . ago($lastUpdate) . ")";
+						echo date("H:i:s y-m-d", $lastUpdate) . " &nbsp; (" . ago($lastUpdate) . ")";
 					echo "</td>";
 				echo "</tr>";
 
@@ -192,7 +192,7 @@
 
 	
 	echo "<div style='text-align:right;'>";
-		echo "<a style='margin-right:15px;' target='_blank' href='./public/chart.php?id=$getID'>Public chart</a>";
+		echo "<a style='margin-right:15px;' target='_blank' href='./public/index.php?page=chart&id=$getID'>Public chart</a>";
 		echo "<a style='margin-right:15px;' target='_blank' href='./public/xml_sensor.php?sensorID=$getID'>XML Latest values</a>";
 		echo "<a style='margin-right:15px;' target='_blank' href='./public/xml_sensor_log.php?sensorID=$getID'>XML Values last day</a>";
 	echo "</div>";
@@ -230,7 +230,7 @@
 			    	echo "<tr>";
 			    		//echo "<td>{$row['sensor_id']}</td>";
 			    		//echo "<td></td>";
-			    		echo "<td>".date("H:i:s d-m-y", $row['time_updated'])." &nbsp; (".ago($row['time_updated']).")</td>";
+			    		echo "<td>".date("H:i:s y-m-d", $row['time_updated'])." &nbsp; (".ago($row['time_updated']).")</td>";
 			    		echo "<td>{$row['temp_value']} &deg;</td>";
 			    		echo "<td>{$row['humidity_value']} %</td>";
 			    	echo "</tr>";

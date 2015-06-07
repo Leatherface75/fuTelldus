@@ -1,10 +1,12 @@
-    <script src="../lib/packages/rgraph_libraries/RGraph.common.core.js" ></script>
-	<script src="../lib/packages/rgraph_libraries/RGraph.common.dynamic.js" ></script>
-	<script src="../lib/packages/rgraph_libraries/RGraph.common.tooltips.js" ></script>
-	<script src="../lib/packages/rgraph_libraries/RGraph.common.effects.js" ></script>
-	<script src="../lib/packages/rgraph_libraries/RGraph.common.key.js" ></script>
-	<script src="../lib/packages/rgraph_libraries/RGraph.line.js" ></script>
-	<!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+<script src="../lib/packages/Highstock-1.3.1/js/highstock.js"></script>
+<script src="../lib/packages/Highstock-1.3.1/js/modules/exporting.js"></script>
+<script>
+
+	jQuery(document).ready(function() {
+	  jQuery("abbr.timeago").timeago();
+	});
+
+</script>
 
 	<div class="container">
 
@@ -40,156 +42,177 @@
 
 
 
+    /* TEMP SENSOR 01: Get sensors
+    --------------------------------------------------------------------------- */
+//    $query = "SELECT * FROM ".$db_prefix."sensors WHERE user_id='{$user['user_id']}' AND monitoring='1'";
+//    $result = $mysqli->query($query);
+
+//    while ($row = $result->fetch_array()) {
+
+       echo "<div class='well'>";
+
+        unset($temp_values);
+        $joinValues = "";
+        unset($hum_values);      // added humidity variables
+        $humValues = "";      // added humidity variables
 
 
+        /* Get sensordata and generate graph
+        --------------------------------------------------------------------------- */
+        $queryS = "SELECT * FROM ".$db_prefix."sensors_log WHERE sensor_id='{$getID}' AND time_updated > '$showFromDate' ORDER BY time_updated ASC";
+        $resultS = $mysqli->query($queryS);
+
+        
+        while ($sensorData = $resultS->fetch_array()) {
+            $db_tempValue = trim($sensorData["temp_value"]);
+         $db_humValue = trim($sensorData["humidity_value"]);      //retrive humidity values
+
+            $timeJS = $sensorData["time_updated"] * 1000;
+            $temp_values[]        = "[" . $timeJS . "," . round($db_tempValue, 2) . "]";
+	    $hum_values[]         = "[" . $timeJS . "," . round($db_humValue, 2) . "]";      // do something with values
+        }
 
 
+        $joinValues = join($temp_values, ',');
+        $joinhumValues = join($hum_values, ',');      // do something more with values
+	if ($db_humValue == 0) unset($joinhumValues);
 
-			echo "<div class='' style='margin-bottom:60px;'>";
+echo <<<end
+<script type="text/javascript">
 
+$(function() {
+   $('#{$getID}').highcharts('StockChart', {
+      
 
-		        /* Get sensordata and generate graph
-		        --------------------------------------------------------------------------- */
-		        //echo "<h5 class='hidden-phone' style='margin-bottom:35px;'>".$lang['Latest readings']."</h5>";
-
-		        $queryS = "SELECT * FROM ".$db_prefix."sensors_log WHERE sensor_id='$getID' AND time_updated > '$showFromDate' ORDER BY time_updated DESC LIMIT 1000";
-		        $resultS = $mysqli->query($queryS);
-
-
-		        // Set arrays
-		        $labels             = array();
-		        $tooltips_temp      = array();
-		        $tooltips_humidity  = array();
-		        $temp_value         = array();
-		        $humidity_value     = array();
+      chart: { height: 600      // changed hight to make more space
+      },
 
 
-		        // Collect data
-		        $count = 0; // Settings count for view data every hour
-		        $negativeValue = false;
-		        $maxValue = 0;
-		        $minValue = 0;
-		        
-		        while ($sensorData = $resultS->fetch_array()) {
-
-		            $db_tempValue = trim($sensorData["temp_value"]);
-		            $db_humidityValue = trim($sensorData["humidity_value"]);
-
-		            $showHumidity = false;
-		            if ($sensorData["humidity_value"] > 0) $showHumidity = true;
-
-
-
-
-		            if ($count == 1) {
-		                $labels[]               = date("H:i", $sensorData["time_updated"]);
-		                $tooltips_temp[]        = "<b>".$db_tempValue."&deg;</b> &nbsp; (" . date("H:i", $sensorData["time_updated"]) . ")";
-		                $tooltips_humidity[]    = "$db_humidityValue %";
-		                $temp_value[]           = $db_tempValue;
-		                $humidity_value[]       = $db_humidityValue;
-
-		                // Check if chart has negative values
-		                if ($db_tempValue < 0) $negativeValue = true;
-
-		                // Get max/min values in chart
-		                if ($db_tempValue > $maxValue) $maxValue = $db_tempValue;
-		                if ($db_tempValue < $minValue) $minValue = $db_tempValue;
-
-		            }
-
-
-		            // Add to count or reset
-		            $count++;
-		            if ($count == 4) $count = 0;
-		        }
+      rangeSelector: {
+         enabled: false,
+         buttons: [{
+            type: 'hour',
+            count: 1,
+            text: '1h'
+         },{
+            type: 'hour',
+            count: 12,
+            text: '12h'
+         },{
+            type: 'day',
+            count: 1,
+            text: '1d'
+         },{
+            type: 'week',
+            count: 1,
+            text: '1w'
+         }, {
+            type: 'month',
+            count: 1,
+            text: '1m'
+         }, {
+            type: 'month',
+            count: 6,
+            text: '6m'
+         }, {
+            type: 'year',
+            count: 1,
+            text: '1y'
+         }, {
+            type: 'all',
+            text: 'All'
+         }],
+         selected: 2
+      },
 
 
-		        // Round the max/min values for use as yaxis max/min on chart
-		        $minValue = round($minValue) - 2;
-		        $maxValue = round($maxValue) + 2;
+        legend: {
+         align: "center",
+         layout: "horizontal",
+         enabled: true,
+         verticalAlign: "bottom",
+      },
 
+      yAxis: [{
+         title: {
+            text: '{$lang["Temperature"]} (\u00B0C)',
+	    style: {color: '#777'}
+         },
+         labels: {
+             formatter: function() {
+               return this.value + '\u00B0C';
+             },
+            format: '{value}¡C',
+             style: {
+               color: '#777'
+             }
+         },
+         height: 260,         // set manual hight for temperature
+      }, {
+         title: {                  // added humidity yAxis
+            text: '{$lang["Humidity"]} (%)',
+            style: {color: '#777'}   // set manual color for yAxis humidity
+         },
+         labels: {                  
+             formatter: function() {
+               return this.value +'%';
+             },
+            format: '{value}%',
+             style: {
+               color: '#777'
+             }
+         },
+         top: 335,                  //positioned humidity below temperature 
+         height: 120,               // set manual hight for humidity
+         offset: 0,                  //lining humidity yAxis label upto temperature
+          
+      }],
+	chart:{
+	    type: 'area'
+	},
+      series: [{
+         name: '{$lang["Temperature"]}',
+         data: [$joinValues],
+	 fillOpacity: '0.1',
+	 color: '#00CC66',
+         type: 'spline',
+         tooltip: {
+            valueDecimals: 1, valueSuffix: '\u00B0C'
+         }
+      },{
+         name: '{$lang["Humidity"]}',            // added humidity as xAxis data
+         data: [$joinhumValues],
+	 fillOpacity: '0.1',
+         color: '#0099FF',            // set graf color to the same as yAxis label
+         type: 'spline',
+         yAxis: 1,                  // connecting humdity data to yAxis
+         tooltip: {
+           valueDecimals: 1, valueSuffix: '%'
+         }
+         
+      }],
 
+      // tooltip: {                  // seperate tooltips set i data series
+       //    valueSuffix: '¡C'
+       // },
 
-		        // Reverse array to preview newest update at right in chart
-		        $labels             = array_reverse($labels);
-		        $tooltips_temp      = array_reverse($tooltips_temp);
-		        $tooltips_humidity  = array_reverse($tooltips_humidity);
-		        $temp_value         = array_reverse($temp_value);
-		        $humidity_value     = array_reverse($humidity_value);
+      xAxis: {
+         type: 'datetime',
+      }, 
 
+       
+   });
+});
 
-		        // Aggregate all the data into one string
-		        $temp_value_string          = "[" . join(", ", $temp_value) . "]";
-		        $humidity_value_string      = "[" . join(", ", $humidity_value) . "]";
-		        $labels_string              = "['" . join("', '", $labels) . "']";
-		        $tooltips_temp_string       = "['" . join("', '", $tooltips_temp) . "']";
-		        $tooltips_humidity_string   = "['" . join("', '", $tooltips_humidity) . "']";
+</script>
 
+<div id="{$getID}" style="height: 600px; min-width: 240px"></div>      
+end;
+   // changed height to match graf height
 
-		        if ($showHumidity) {
-		            echo "
-		            <canvas class='linechart hidden-phone' id='$getID' width='990' height='400'>[No canvas support]</canvas>
-		            <script>
-		                chart = new RGraph.Line('$getID', $temp_value_string, $humidity_value_string);
-		                chart.Set('chart.background.grid.autofit', true);
-		                chart.Set('chart.gutter.left', 35);
-		                chart.Set('chart.gutter.right', 5);
-		                chart.Set('chart.hmargin', 10);
-		                chart.Set('chart.tickmarks', 'circle');
-		                chart.Set('chart.labels', $labels_string);
-		                chart.Set('chart.tooltips', $tooltips_temp_string, $tooltips_humidity_string);
-		                chart.Set('chart.key', ['".$lang['Temperature']."', '".$lang['Humidity']."']);
-		            ";
+   echo "</div>";
 
-		            if ($negativeValue == true) echo "chart.Set('chart.xaxispos', 'center');";
-
-		            echo "
-		                chart.Set('key.position', 'gutter');
-		                chart.Set('key.position.gutter.boxed', false);
-		                chart.Set('key.position.x', 700);
-		                chart.Set('key.position.y', 0);
-		                chart.Set('chart.text.angle', 45);
-		                chart.Set('chart.gutter.bottom', 50);
-		                chart.Draw();
-		            </script>
-		            ";
-		        } else {
-		            echo "
-		            <canvas class='linechart hidden-phone' id='$getID' width='990' height='400'>[No canvas support]</canvas>
-		            <script>
-		                chart = new RGraph.Line('$getID', $temp_value_string);
-		                chart.Set('chart.background.grid.autofit', true);
-		                chart.Set('chart.gutter.left', 35);
-		                chart.Set('chart.gutter.right', 5);
-		                chart.Set('chart.hmargin', 10);
-		                chart.Set('chart.tickmarks', 'circle');
-		                chart.Set('chart.labels', $labels_string);
-		                chart.Set('chart.tooltips', $tooltips_temp_string);
-		                chart.Set('chart.key', ['".$lang['Temperature']."']);
-		            ";
-
-		            if ($negativeValue == true) echo "chart.Set('chart.xaxispos', 'center');";
-
-		            //echo "chart.Set('chart.ymax', $maxValue);";
-		            //echo "chart.Set('chart.ymin', $minValue);";
-
-		            echo "
-		                chart.Set('key.position', 'gutter');
-		                chart.Set('key.position.gutter.boxed', false);
-		                chart.Set('key.position.x', 780);
-		                chart.Set('key.position.y', 0);
-		                chart.Set('chart.text.angle', 45);
-		                chart.Set('chart.gutter.bottom', 50);
-		                chart.Draw();
-		            </script>
-		            ";
-		        }
-
-		        unset($labels);
-		        unset($tooltips_temp);
-		        unset($tooltips_humidity);
-		        unset($temp_value);
-		        unset($humidity_value);
+//    }
 
 
 
@@ -217,7 +240,7 @@
 		                    echo "<td>".$lang['Temperature']." ".strtolower($lang['Now'])."</td>";
 		                    echo "<td>";
 		                    	echo round($sensorDataNow['temp_value'], 2)." &deg;";
-		                    	echo "<abbr style='margin-left:20px;' class=\"timeago\" title='".date("c", $sensorDataNow['time_updated'])."'>".date("d-m-Y H:i", $sensorDataNow['time_updated'])."</abbr>";
+		                    	echo "<abbr style='margin-left:20px;' class=\"timeago\" title='".date("c", $sensorDataNow['time_updated'])."'>".date("Y-m-d H:i", $sensorDataNow['time_updated'])."</abbr>";
 		                    echo "</td>";
 		                echo "</tr>";
 
@@ -246,7 +269,7 @@
 		                        echo "<td>".$lang['Humidity']." ".strtolower($lang['Now'])."</td>";
 		                        echo "<td>";
 		                        	echo round($sensorDataNow['humidity_value'], 2)." %";
-		                        	echo "<abbr style='margin-left:20px;' class=\"timeago\" title='".date("c", $sensorDataNow['time_updated'])."'>".date("d-m-Y H:i", $sensorDataNow['time_updated'])."</abbr>";
+		                        	echo "<abbr style='margin-left:20px;' class=\"timeago\" title='".date("c", $sensorDataNow['time_updated'])."'>".date("Y-m-d H:i", $sensorDataNow['time_updated'])."</abbr>";
 		                        echo "</td>";
 		                    echo "</tr>";
 		                }

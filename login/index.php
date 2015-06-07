@@ -4,10 +4,12 @@
 
   
   // Auto login with remember-me cookie
-  if (isset($_COOKIE["fuTelldus_user_loggedin"])) {
-    $_SESSION['fuTelldus_user_loggedin'] = $_COOKIE["fuTelldus_user_loggedin"];
-    header("Location: ../index.php");
-    exit();
+  if (isset($_COOKIE["user_loggedin"])) {
+    if (!isset($_GET['msg'])) {
+      $_SESSION['fuTelldus_user_loggedin'] = $_COOKIE["user_loggedin"];
+      header("Location: ../index.php");
+      exit();
+    }
   }
 
 ?>
@@ -41,15 +43,23 @@
 </head>
 
 <body>
-
+<div class="hidden-phone" style='height: 90px;'></div>
 <div class="container">
 
     
 
 
     <form class="form-signin" action="login_exec.php" method="POST">
-        <h2 class="form-signin-heading"><?php echo $config['pagetitle']; ?></h2>
-
+      <p class="hidden-phone" style='font-size:30px; font-weight: bold; text-align: right; margin-top: -10px;'>
+        <img style='float: left; height:30px;' src="../images/logo.png" alt="brand" />
+        <?php echo $config['pagetitle']; ?>
+      </p>
+      <p class="visible-phone" style='font-size:25px; font-weight: bold; text-align: right; margin-top: -10px; margin-left: -20px; margin-right: -20px;'>
+        <img style='float: left; height:25px;' src="../images/logo.png" alt="brand" />
+        <?php echo $config['pagetitle']; ?>
+      </p>
+      <div style='height: 30px;'></div>
+      
         <?php
           if (isset($_GET['msg'])) {
               if ($_GET['msg'] == 01) echo "<div class='alert alert-error'>Wrong username and/or password</div>";
@@ -79,7 +89,7 @@
             ?>
 
 
-            <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+            <button class="btn btn-large btn-inverse" type="submit">Sign in</button>
         </div>
 
 

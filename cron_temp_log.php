@@ -97,11 +97,21 @@
 			$humidityValue 	= trim($xml->data[1]['value']);
 
 			// Add values to DB
-			$queryInsert = "REPLACE INTO ".$db_prefix."sensors_log SET 
+			if ($humidityValue != NULL || $humidityValue != "") {
+				$queryInsert = "INSERT INTO ".$db_prefix."sensors_log SET 
 							sensor_id='". $sensor['sensor_id'] ."', 
 							time_updated='". $lastUpdated ."', 
 							temp_value='". $tempValue ."', 
 							humidity_value='". $humidityValue ."'";
+			}
+			else {
+				$humidityValue = "0";
+				$queryInsert = "INSERT INTO ".$db_prefix."sensors_log SET 
+							sensor_id='". $sensor['sensor_id'] ."', 
+							time_updated='". $lastUpdated ."', 
+							temp_value='". $tempValue ."', 
+							humidity_value='". $humidityValue ."'";	
+			}
 			$resultInsert = $mysqli->query($queryInsert);
 	    
 

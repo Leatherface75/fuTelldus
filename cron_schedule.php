@@ -2,7 +2,7 @@
 
 	/* Connect to database
 	--------------------------------------------------------------------------- */
-	require("./lib/base.inc.php");
+	require("lib/base.inc.php");
 
 	// Create DB-instance
 	$mysqli = new Mysqli($host, $username, $password, $db_name); 
@@ -17,6 +17,9 @@
 	// Set DB charset
 	mysqli_set_charset($mysqli, "utf8");
 
+	/* Get oAuth class
+	--------------------------------------------------------------------------- */
+	require_once 'HTTP/OAuth/Consumer.php';
 
 
 
@@ -42,6 +45,10 @@
 
     if ($numRows > 0) {
     	while($row = $result->fetch_array()) {
+		// Get keys from owner of sensor
+		$query3 = "SELECT * FROM ".$db_prefix."users_telldus_config WHERE user_id='{$row['user_id']}'";
+			$result3 = $mysqli->query($query3);
+			$telldusConf2 = $result3->fetch_array();
 
     		$scheduleRun = false;	// Set default as false
 
@@ -60,7 +67,7 @@
     		// Check only for temp values newer than
     		$newerThan = (time() - 3600); // 3600 = 1 hour
 
-    		$queryTemp = "SELECT * FROM ".$db_prefix."sensors_log WHERE sensor_id='{$row['sensor_id']}' AND time_updated < '$newerThan' ORDER BY time_updated DESC LIMIT 1";
+    		$queryTemp = "SELECT * FROM ".$db_prefix."sensors_log WHERE sensor_id='{$row['sensor_id']}' AND time_updated > '$newerThan' ORDER BY time_updated DESC LIMIT 1";
     		$resultTemp = $mysqli->query($queryTemp);
     		$tempData = $resultTemp->fetch_array();
 
@@ -99,7 +106,7 @@
 			// Connect to Telldus Live
 			else {
 				require_once 'HTTP/OAuth/Consumer.php';
-				$consumer = new HTTP_OAuth_Consumer(constant('PUBLIC_KEY'), constant('PRIVATE_KEY'), constant('TOKEN'), constant('TOKEN_SECRET'));
+				$consumer = new HTTP_OAuth_Consumer($telldusConf2['public_key'], $telldusConf2['private_key'], $telldusConf2['token'], $telldusConf2['token_secret']);
 
 				if ($row['device_set_state'] == 1) $deviceStateApiParameter = "turnOn";
 				else $deviceStateApiParameter = "turnOff";
@@ -133,6 +140,11 @@
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
 							$mailMessage = str_replace("%%value%%", $tempData['temp_value'], $mailMessage);
+												
+				    		$pushMessage = "{$lang['Push mail_notification']}";
+
+				    		$pushMessage = str_replace("%%sensor%%", $row['name'], $pushMessage);
+							$pushMessage = str_replace("%%value%%", $tempData['temp_value'], $pushMessage);
 						}
 
 
@@ -161,6 +173,11 @@
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
 							$mailMessage = str_replace("%%value%%", $tempData['humidity_value'], $mailMessage);
+												
+				    		$pushMessage = "{$lang['Push mail_notification']}";
+
+				    		$pushMessage = str_replace("%%sensor%%", $row['name'], $pushMessage);
+							$pushMessage = str_replace("%%value%%", $tempData['humidity_value'], $pushMessage);
 						}
 
 						// Send state to device
@@ -194,6 +211,11 @@
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
 							$mailMessage = str_replace("%%value%%", $tempData['temp_value'], $mailMessage);
+												
+				    		$pushMessage = "{$lang['Push mail_notification']}";
+
+				    		$pushMessage = str_replace("%%sensor%%", $row['name'], $pushMessage);
+							$pushMessage = str_replace("%%value%%", $tempData['temp_value'], $pushMessage);
 						}
 
 						// Send state to device
@@ -221,6 +243,11 @@
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
 							$mailMessage = str_replace("%%value%%", $tempData['humidity_value'], $mailMessage);
+					
+				    		$pushMessage = "{$lang['Push mail_notification']}";
+
+				    		$pushMessage = str_replace("%%sensor%%", $row['name'], $pushMessage);
+							$pushMessage = str_replace("%%value%%", $tempData['humidity_value'], $pushMessage);
 						}
 
 						// Send state to device
@@ -240,7 +267,7 @@
 		    /* IF warning = true
 			--------------------------------------------------------------------------- */
 		    if ($scheduleRun) {
-			    
+			
 		    	// Update sent timestamp
 			    $queryTimestamp = "UPDATE ".$db_prefix."schedule SET last_warning='".time()."' WHERE notification_id='".$row['notification_id']."'";
 				$resultTimestamp = $mysqli->query($queryTimestamp);
@@ -253,6 +280,12 @@
 					if (!empty($row['notification_mail_primary'])) sendMail($row['notification_mail_primary'], $mailSubject, $mailMessage);
 					if (!empty($row['notification_mail_secondary'])) sendMail($row['notification_mail_secondary'], $mailSubject, $mailMessage);
 				}
+				// Send push
+					if ($row['send_push'] == 1 && !empty($telldusConf2['push_user']) && !empty($telldusConf2['push_app']) && $repeatNotification == true) {
+						
+					// Use PushOver curl
+					sendPush("{$telldusConf2['push_app']}", "{$telldusConf2['push_user']}", "{$mailSubject}", "{$pushMessage}");
+					}
 			}
 
 
@@ -262,6 +295,73 @@
 
     	} //end-while
     } //end-numRows
+    
+    
+
+		//    Run device schedule
+		//   -----------------------------------------------------------------------------------
+
+	$query = "SELECT * 
+			  FROM ".$db_prefix."schedule_device
+			  INNER JOIN ".$db_prefix."devices ON ".$db_prefix."schedule_device.device_id = ".$db_prefix."devices.device_id
+			  INNER JOIN ".$db_prefix."users ON ".$db_prefix."schedule_device.user_id = ".$db_prefix."users.user_id
+			  ";
+    $result6 = $mysqli->query($query);
+    $numRows2 = $result6->num_rows;
+
+    if ($numRows2 > 0) {
+    	while($row4 = $result6->fetch_array()) {
+		if ($row4['send_to_mail'] == 1 || $row4['send_push'] == 1) {
+		
+    	/* Connect to telldus
+		--------------------------------------------------------------------------- */
+    	$query2 = "SELECT * FROM ".$db_prefix."users_telldus_config WHERE user_id='{$row4['user_id']}'";
+  		$result2 = $mysqli->query($query2);
+  		$telldusConf = $result2->fetch_array();
+		
+		$getFrom = strtotime('- 5 minutes'); //5 minutes back
+		$getTo = time(); //Until now
+		
+		$consumer = new HTTP_OAuth_Consumer($telldusConf['public_key'], $telldusConf['private_key'], $telldusConf['token'], $telldusConf['token_secret']);
+
+		$params = array('id'=> $row4['device_id'], 'from' => $getFrom, 'to' => $getTo);
+		$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/history', $params, 'GET');
+		
+
+		$xmlString = $response->getBody();
+		$xmldata = new SimpleXMLElement($xmlString);
+	    
+
+				// Send mail
+				if (count($xmldata->history) > 0) {
+					if ($row4['send_to_mail'] == 1) {
+				    	$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['device_id']} {$row4['name']} {$lang['Device action']}";
+				    	$mailMessage = "{$lang['Warning']} {$lang['Schedule']}.";
+
+					// Use mail-function in /lib/php_functions/global.functions.inc.php
+					if (!empty($row4['notification_mail_primary'])) sendMail($row4['notification_mail_primary'], $mailSubject, $mailMessage);
+					if (!empty($row4['notification_mail_secondary'])) sendMail($row4['notification_mail_secondary'], $mailSubject, $mailMessage);
+					}
+				// Send push
+					if ($row4['send_push'] == 1 && !empty($telldusConf['push_user']) && !empty($telldusConf['push_app'])) {
+				    	$pushMessage = "{$row4['push_message']}";
+					//$mess = "({$row4['name']}){$row4['device_id']}";
+
+				    	//$pushMessage = str_replace("%%device%%", $mess, $pushMessage);
+					$pushTitle = "{$config['pagetitle']}: {$lang['Warning']} {$lang['Schedule']}.";
+					// Use PushOver curl
+					sendPush("{$telldusConf['push_app']}", "{$telldusConf['push_user']}", "{$pushTitle}", "{$pushMessage}");
+					}
+				}
+
+
+
+				
+
+		} //end-if
+	} //end-while
+    } //end-numRows
+    
 
 
 ?>

@@ -1,11 +1,19 @@
 <script src="lib/jscripts/futelldus_lights.js"></script>
-
+<script type="text/javascript">
+	$(function() {
+        $('.table-hover .klicka').click(function() {
+            var rowId = $(this).attr("row-key");
+	    var rowName = $(this).attr("row-name");
+            window.location="?page=history&id="+rowId+"&name="+rowName;
+        });
+  });
+</script>
 
 <?php
 	
 
 	if (!$telldusKeysSetup) {
-		echo "No keys for Telldus has been added... Keys can be added under <a href='?page=settings&view=user'>your userprofile</a>.";
+		echo "No keys for Telldus has been added... Keys can be added under <a href='getRequestToken.php'>your userprofile</a>.";
 		exit();
 	}
 
@@ -81,8 +89,12 @@
 	/* List groups
 	--------------------------------------------------------------------------- */
 	echo "<h3 class='hidden-phone'>{$lang['Groups']}</h3>";
+	
+	$query = "SELECT * FROM ".$db_prefix."devices WHERE type='group' AND user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
+	$result = $mysqli->query($query);
+	
+	if ($result->num_rows) {
 
-	//echo "<div class='well'>";
 		echo "<table class='table table-striped table-hover'>";
 			echo "<thead class='hidden-phone'>";
 				echo "<tr>";
@@ -93,8 +105,6 @@
 			echo "</thead>";
 			
 			echo "<tbody>";
-				$query = "SELECT * FROM ".$db_prefix."devices WHERE type='group' AND user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
-				$result = $mysqli->query($query);
 
 				while ($row = $result->fetch_array()) {
 					echo "<tr>";
@@ -102,6 +112,9 @@
 						echo "<td class='hidden-phone'>{$row['clientname']}</td>";
 						echo "<td style='text-align:right;'>";
 							echo "<div id='ajax_loader_{$row['device_id']}'></div>";
+							
+
+							
 							echo "<div class='btn-group'>";
 								echo "<a id='btn_{$row['device_id']}_off' class='btn $activeStateOff' href=\"javascript:lightControl('off', '{$row['device_id']}');\">{$lang['Off']}</a>";
 								echo "<a id='btn_{$row['device_id']}_on' class='btn $activeStateOn' href=\"javascript:lightControl('on', '{$row['device_id']}');\">{$lang['On']}</a>";
@@ -111,15 +124,21 @@
 				}
 			echo "</tbody>";
 		echo "</table>";
-	//echo "</div>";
+	}
+
+	else echo "<div class='alert'>{$lang['Nothing to display']}</div>";
 
 
 
 	/* List devices
 	--------------------------------------------------------------------------- */
 	echo "<h3 class='hidden-phone'>{$lang['Devices']}</h3>";
+	
+	$query = "SELECT * FROM ".$db_prefix."devices WHERE type='device' AND user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
+	$result = $mysqli->query($query);
 
-	//echo "<div class='well'>";
+	if ($result->num_rows) {
+
 		echo "<table class='table table-striped table-hover'>";
 			echo "<thead class='hidden-phone'>";
 				echo "<tr>";
@@ -130,37 +149,57 @@
 			echo "</thead>";
 			
 			echo "<tbody>";
-				$query = "SELECT * FROM ".$db_prefix."devices WHERE type='device' AND user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
-				$result = $mysqli->query($query);
 
 				while ($row = $result->fetch_array()) {
 					echo "<tr valign='top'>";
-						echo "<td>";
+						echo "<td row-key='{$row['device_id']}' row-name='{$row['name']}' class='klicka'>";
 							echo "<div style='display:inline-block;' id='ajax_loader_{$row['device_id']}'></div>";
 							echo "{$row['name']}";
+							if ($userTelldusConf['sync_from_telldus'] == 1) {
+								if ($row['state'] == 1) {
+									//$activeStateOn = "btn-success active";
+									//$activeStateOff = "";
+									//echo "<img class='hidden-phone' id='imgDisp{$row['device_id']}' style='height:30px;' src='images/on.png' alt='icon' />";
+									echo "<img align='right' class='visible-phone' id='light_{$row['device_id']}' style='height:30px;' src='images/on.png' alt='icon' />";
+								}
+								elseif ($row['state'] == 2) {
+									//$activeStateOn = "";
+									//$activeStateOff = "btn active";
+									//echo "<img class='hidden-phone' id='imgDisp{$row['device_id']}' style='height:30px;' src='images/off.png' alt='icon' />";
+									echo "<img align='right' class='visible-phone' id='light_{$row['device_id']}' style='height:30px;' src='images/off.png' alt='icon' />";
+								}
+								else {
+									//$activeStateOff = "";
+									//$activeStateOn = "";
+								}
+							}
 						echo "</td>";
 
-						echo "<td class='hidden-phone'>{$row['clientname']}</td>";
-						echo "<td style='text-align:right;'>";
 
+						echo "<td class='hidden-phone klicka' row-key='{$row['device_id']}' row-name='{$row['name']}'>{$row['clientname']}</td>";
+						echo "<td style='text-align:right;'>";
 
 							if ($userTelldusConf['sync_from_telldus'] == 1) {
 								if ($row['state'] == 1) {
-									$activeStateOn = "btn-success active";
-									$activeStateOff = "";
+									//$activeStateOn = "btn-success active";
+									//$activeStateOff = "";
+									echo "<img class='hidden-phone' id='imgDisp{$row['device_id']}' style='height:30px;' src='images/on.png' alt='icon' />";
+									//echo "<img class='visible-phone' id='light_{$row['device_id']}' style='height:20px;' src='images/on.png' alt='icon' />";
 								}
 								elseif ($row['state'] == 2) {
-									$activeStateOn = "";
-									$activeStateOff = "btn-success active";
+									//$activeStateOn = "";
+									//$activeStateOff = "btn active";
+									echo "<img class='hidden-phone' id='imgDisp{$row['device_id']}' style='height:30px;' src='images/off.png' alt='icon' />";
+									//echo "<img class='visible-phone' id='light_{$row['device_id']}' style='height:20px;' src='images/off.png' alt='icon' />";
 								}
 								else {
-									$activeStateOff = "";
-									$activeStateOn = "";
+									//$activeStateOff = "";
+									//$activeStateOn = "";
 								}
 							}
 
-							
 
+							
 							echo "<div class='btn-group'>";
 								echo "<a id='btn_{$row['device_id']}_off' class='btn $activeStateOff' href=\"javascript:lightControl('off', '{$row['device_id']}');\">{$lang['Off']}</a>";
 								echo "<a id='btn_{$row['device_id']}_on' class='btn $activeStateOn' href=\"javascript:lightControl('on', '{$row['device_id']}');\">{$lang['On']}</a>";
@@ -170,7 +209,9 @@
 				}
 			echo "</tbody>";
 		echo "</table>";
-	//echo "</div>";
+	}
+	
+	else echo "<div class='alert'>{$lang['Nothing to display']}</div>";
 
 
 ?>

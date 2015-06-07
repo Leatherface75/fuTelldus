@@ -4,8 +4,12 @@
 
 	require_once 'lib/base.inc.php';
 	require_once 'HTTP/OAuth/Consumer.php';
+	
+	// Set public and private key to developers key
+	$_SESSION['public'] = "FEHUVEW84RAFR5SP22RABURUPHAFRUNU";
+	$_SESSION['private'] = "ZUXEVEGA9USTAZEWRETHAQUBUR69U6EF";
 
-	$consumer = new HTTP_OAuth_Consumer($userTelldusConf['public_key'], $userTelldusConf['private_key']);
+	$consumer = new HTTP_OAuth_Consumer($_SESSION['public'], $_SESSION['private']);
 
 	$consumer->getRequestToken(constant('REQUEST_TOKEN'), constant('BASE_URL').'/getAccessToken.php');
 

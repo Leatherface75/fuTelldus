@@ -45,7 +45,7 @@
 	}
 
 	.sensors-wrap .sensor-humidity {
-		font-size:40px; display:inline-block; valign:top; margin-left:15px; padding-top:10px; border:0px solid red;
+		font-size:20px; display:inline-block; valign:top; margin-left:15px; padding-top:10px; border:0px solid red;
 	}
 
 	.sensors-wrap .sensor-timeago {
@@ -59,7 +59,7 @@
 <?php
 
 	if (!$telldusKeysSetup) {
-		echo "No keys for Telldus has been added... Keys can be added under <a href='?page=settings&view=user'>your userprofile</a>.";
+		echo "No keys for Telldus has been added... Keys can be added under <a href='getRequestToken.php'>your userprofile</a>.";
 		exit();
 	}
 
@@ -101,7 +101,7 @@
             	echo "</div>";
 
             	echo "<div class='sensor-temperature'>";
-            		echo "<img src='images/thermometer02.png' alt='icon' />";
+            		echo "<img src='images/therm.png' alt='icon' />";
             		echo "{$sensorData['temp_value']}&deg;";
             	echo "</div>";
 
@@ -113,7 +113,7 @@
             	}
 
             	echo "<div class='sensor-timeago'>";
-            		echo "<abbr class=\"timeago\" title='".date("c", $sensorData['time_updated'])."'>".date("d-m-Y H:i", $sensorData['time_updated'])."</abbr>";
+            		echo "<abbr class=\"timeago\" title='".date("c", $sensorData['time_updated'])."'>".date("Y-m-d H:i", $sensorData['time_updated'])."</abbr>";
             	echo "</div>";
 
             echo "</div>";
@@ -149,7 +149,7 @@
 		            	echo "</div>";
 
 		            	echo "<div class='sensor-temperature'>";
-		            		echo "<img src='images/thermometer02.png' alt='icon' />";
+		            		echo "<img src='images/therm.png' alt='icon' />";
 		            		echo $xmlData->sensor->temp . "&deg;";
 		            	echo "</div>";
 
@@ -161,7 +161,7 @@
 		            	}
 
 		            	echo "<div class='sensor-timeago'>";
-		            		echo "<abbr class=\"timeago\" title='".date("c", trim($xmlData->sensor->lastUpdate))."'>".date("d-m-Y H:i", trim($xmlData->sensor->lastUpdate))."</abbr>";
+		            		echo "<abbr class=\"timeago\" title='".date("c", trim($xmlData->sensor->lastUpdate))."'>".date("Y-m-d H:i", trim($xmlData->sensor->lastUpdate))."</abbr>";
 		            	echo "</div>";
 
 		            echo "</div>";

@@ -3,10 +3,10 @@
 	
 	/* Connect to database
 	--------------------------------------------------------------------------- */
-	$host 		= "localhost"; 					// Host name
-	$username 	= "USERNAME"; 					// Mysql username
-	$password 	= "PASSWORD"; 					// Mysql password
-	$db_name 	= "DATABASE_NAME"; 				// Mysql DB
+	$host 		= ""; 					// Host name
+	$username 	= ""; 					// Mysql username
+	$password 	= ""; 					// Mysql password
+	$db_name 	= ""; 				// Mysql DB
 
 	
 	

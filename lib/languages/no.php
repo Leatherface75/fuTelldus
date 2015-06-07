@@ -13,7 +13,7 @@ $lang = array(
 	"Sensors" => "Sensorer",
 	"Chart" => "Graf",
 	"Report" => "Rapporter",
-	"Lights" => "Lys",
+	"Lights" => "Enheter",
 	"Settings" => "Innstillinger",
 	"Log out" => "Logg ut",
 
@@ -31,6 +31,7 @@ $lang = array(
 	"Userprofile" => "Brukerprofil",
 	"My profile" => "Min profil",
 	"Not logged in" => "Ikke innlogget",
+        "Last_active" => "Senast aktiv",
 	
 
 	// Messages
@@ -45,6 +46,9 @@ $lang = array(
 	"Nothing to display" => "Nothing to display",
 	"Data saved" => "Data saved",
 	"Deleted" => "Slettet",
+        "Sensor added to ignored" => "Sensor ignorerad",
+	"Sensor removed" => "Sensor borttagen",
+        "Sensor removed ignored" => "Sensor aktiverad",
 	
 	
 	// Form
@@ -69,6 +73,7 @@ $lang = array(
 	"XML URL" => "XML URL",
 	"Description" => "Description",
 	"Outgoing mailaddress" => "Utgående e-postadresse",
+        "Log_activity" => "Logga senaste aktivitet",
 	"Select chart" => "Velg graf",
 	"Default chart" => "Bruk standard graf",
 	"Chart max days" => "Vis graf for maks antall dager tilbake i tid",
@@ -83,6 +88,14 @@ $lang = array(
 	"Telldus connection test" => "Telldus test-tilkobling",
 	"Sync lists everytime" => "Synkroniser lister hver gang",
 	"List synced" => "Liste synkronisert",
+        
+	// Pushover
+	"Pushover appkey" => "Pushover app-key",
+	"Pushover userkey" => "Pushover user-key",
+        "Push notifications" => "Push notifications",
+        "Push notification" => "Device %%device%% has been activated",
+	"Push mail_notification" => "Warning: The value is %%value%% on sensor %%sensor%%.",
+        "Push message" => "Push message",
 
 
 	// Temperature & chart
@@ -92,6 +105,7 @@ $lang = array(
 	"Combine charts" => "Kombiner",
 	"Split charts" => "Split grafer",
 	"View chart" => "Vis graf",
+        "Chart_type" => "Grafetyp",
 
 
 	// Sensors
@@ -99,9 +113,11 @@ $lang = array(
 	"Sensorname" => "Sensorname",
 	"Sensordata" => "Sensordata",
 	"Sensor ID" => "Sensor ID",
-	"Sensors description" => "<p>Legg sensorer til cronjob for å logge historikk i databasen.</p><p>Sensorlisten hentes med nøkler lagt til under <a href='?page=settings&view=user'>din brukerprofil</a>.</p>",
+	"Sensors description" => "<p>Legg sensorer til cronjob for å logge historikk i databasen.</p><p>Sensorlisten hentes med nøkler lagt til under <a href='?page=settings&view=user&action=edit&id={$user['user_id']}'>din brukerprofil</a>.</p>",
 	"Non public" => "Ikke offentlig",
 	"Public" => "Offentlig",
+        "Ignore" => "Ignorera",
+        "Activate" => "Aktivera",
 
 
 	// Shared sensors
@@ -134,10 +150,27 @@ $lang = array(
 	"Off" => "Av",
 	"Groups" => "Grupper",
 	"Devices" => "Enheter",
+        "Device History" => "Historia för enheten",
+        "State" => "Status",
+   
+   
 
+        // Events
+        "Events" => "Händelser",
+        "Schedules" => "Scheman",
+        "Device" => "Enhet",
+        "Weekdays" => "Veckodagar",
+        "Monday" => "Måndag",
+        "Tuesday" => "Tisdag",
+        "Wednesday" => "Onsdag",
+        "Thursday" => "Torsdag",
+        "Friday" => "Fredag",
+        "Saturday" => "Lördag",
+        "Sunday" => "Söndag",
 
 
 	// Div
+        "Link Webapp" => "Link to create webapp on mobile devices",
 	"Language" => "Språk",
 	"New" => "Ny",
 	"Repeat" => "Gjenta",

@@ -112,7 +112,7 @@
 		    		echo "</div>";
 		    		
 		    		echo "<div style='display:inline-block; width:100px; margin:10px; font-size:20px;'>";
-		    			echo "<img style='margin-right:10px;' src='images/thermometer02.png' alt='icon' />";
+		    			echo "<img style='margin-right:10px;' src='images/therm.png' alt='icon' />";
 		    			echo $xmlData->sensor->temp . "&deg;";
 		    		echo "</div>";
 

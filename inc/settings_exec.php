@@ -5,6 +5,7 @@
 	--------------------------------------------------------------------------- */
 	if (isset($_GET['id'])) $getID = clean($_GET['id']);
 	if (isset($_GET['action'])) $action = clean($_GET['action']);
+        if (isset($_GET['state'])) $state = clean($_GET['state']);
 
 
 
@@ -16,11 +17,20 @@
 
 		// Get POST data
 		$inputEmail = clean($_POST['inputEmail']);
+                $language = clean($_POST['language']);
 		$admin = clean($_POST['admin']);
+                if ($admin == NULL || $admin == "") $admin = 0;
 
 		$newPassword = clean($_POST['newPassword']);
 		$newCPassword = clean($_POST['newCPassword']);
-		$cryptPW = hash('sha256', $newPassword);
+		
+                
+		// Check for password match
+		if ($newPassword != $newCPassword || empty($newPassword)) {
+			header("Location: ?page=settings&view=user&action=create&msg=03");
+			exit();
+		}
+                $cryptPW = hash('sha256', $newPassword);
 
 		$selectChart = clean($_POST['selectChart']);
 
@@ -29,12 +39,15 @@
 		$private_key = clean($_POST['private_key']);
 		$token_key = clean($_POST['token_key']);
 		$token_secret_key = clean($_POST['token_secret_key']);
+		$push_user = clean($_POST['push_user']);
+		$push_app = clean($_POST['push_app']);
 
 
 		// Insert user
 		$query = "INSERT INTO ".$db_prefix."users SET 
 					mail='".$inputEmail."', 
-					password='".$cryptPW."', 
+					password='".$cryptPW."',
+                                        language='".$language."', 
 					admin='".$admin."', 
 					chart_type='".$selectChart."'";
 		$result = $mysqli->query($query);
@@ -48,7 +61,9 @@
 					public_key='".$public_key."', 
 					private_key='".$private_key."', 
 					token='".$token_key."',  
-					token_secret='".$token_secret_key."'";
+					token_secret='".$token_secret_key."',
+					push_user='".$push_user."',
+					push_app='".$push_app."'";
 		$result = $mysqli->query($query);
 
 
@@ -70,7 +85,8 @@
 		$inputEmail = clean($_POST['inputEmail']);
 		$language = clean($_POST['language']);
 		$admin = clean($_POST['admin']);
-
+                if ($admin == NULL || $admin == "") $admin = 0;
+                
 		$newPassword = clean($_POST['newPassword']);
 		$newCPassword = clean($_POST['newCPassword']);
 
@@ -81,24 +97,29 @@
 		$private_key = clean($_POST['private_key']);
 		$token_key = clean($_POST['token_key']);
 		$token_secret_key = clean($_POST['token_secret_key']);
+		$push_user = clean($_POST['push_user']);
+		$push_app = clean($_POST['push_app']);
 
 
 		// Update userdata
 		$query = "UPDATE ".$db_prefix."users SET 
 					mail='".$inputEmail."', 
-					language='".$language."', 
+					language='".$language."',
+					admin='".$admin."', 
 					chart_type='".$selectChart."' 
 					WHERE user_id='".$getID."'";
 		$result = $mysqli->query($query);
 
 		// Update telldus config
 		$query = "REPLACE INTO ".$db_prefix."users_telldus_config SET 
-					user_id='".$user['user_id']."', 
+					user_id='".$getID."', 
 					sync_from_telldus='".$syncTelldusLists."', 
 					public_key='".$public_key."', 
 					private_key='".$private_key."', 
 					token='".$token_key."',  
-					token_secret='".$token_secret_key."'";
+					token_secret='".$token_secret_key."',
+					push_user='".$push_user."',
+					push_app='".$push_app."'";
 		$result = $mysqli->query($query);
 
 
@@ -107,7 +128,7 @@
 		if (!empty($newPassword)) {
 
 			// Check for password match
-			if ($newPassword != $newCPassword || empty($newPassword)) {
+			if ($newPassword != $newCPassword || empty($newCPassword)) {
 				header("Location: ?page=settings&view=user&action=edit&id=$getID&msg=03");
 				exit();
 			}
@@ -137,7 +158,7 @@
 		$query = "DELETE FROM ".$db_prefix."users WHERE user_id='".$getID."'";
 		$result = $mysqli->query($query);
 
-		$query = "DELETE FROM ".$db_prefix."users users_telldus_config user_id='".$getID."'";
+		$query = "DELETE FROM ".$db_prefix."users_telldus_config WHERE user_id='".$getID."'";
 		$result = $mysqli->query($query);
 
 		// Redirect
@@ -199,6 +220,7 @@
 		$mail_from = clean($_POST['mail_from']);
 		$chart_max_days = clean($_POST['chart_max_days']);
 		$language = clean($_POST['language']);
+                $log = clean($_POST['log']);
 
 
 		$query = "UPDATE ".$db_prefix."config SET config_value='".$pageTitle."' WHERE config_name LIKE 'pagetitle'";
@@ -211,6 +233,9 @@
 		$result = $mysqli->query($query);
 
 		$query = "UPDATE ".$db_prefix."config SET config_value='".$language."' WHERE config_name LIKE 'public_page_language'";
+		$result = $mysqli->query($query);
+                
+                $query = "UPDATE ".$db_prefix."config SET config_value='".$log."' WHERE config_name LIKE 'log_activity'";
 		$result = $mysqli->query($query);
 
 
@@ -323,11 +348,15 @@
 		$type = clean($_POST['type']);
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
+		$send_push = clean($_POST['send_push']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
 
 		$deviceID = clean($_POST['deviceID']);
 		$device_action = clean($_POST['device_action']);
+                
+                if (empty($sendTo_mail)) $sendTo_mail = 0;
+                if (empty($mail_secondary)) $mail_secondary = " ";
 
 
 		// Insert telldus config
@@ -341,8 +370,41 @@
 					device='".$deviceID."', 
 					device_set_state='".$device_action."', 
 					send_to_mail='". $sendTo_mail ."',
+					send_push='". $send_push ."',
 					notification_mail_primary='". $mail_primary ."',
 					notification_mail_secondary='". $mail_secondary ."'";
+		$result = $mysqli->query($query);
+		
+
+		// Redirect
+		header("Location: ?page=settings&view=schedule&msg=01");
+		exit();
+	}
+        
+	if ($action == "addSchedule_device") {
+		
+		// Get POST data
+		$deviceID = clean($_POST['deviceID']);
+		$sendTo_mail = clean($_POST['sendTo_mail']);
+		$send_push = clean($_POST['send_push']);
+		$mail_primary = clean($_POST['mail_primary']);
+		$mail_secondary = clean($_POST['mail_secondary']);
+                $push_message = clean($_POST['push_message']);
+                
+                if (empty($sendTo_mail)) $sendTo_mail = 0;
+                if (empty($mail_secondary)) $mail_secondary = " ";
+                if (empty($push_message)) $push_message = " ";
+
+
+		// Insert telldus config
+		$query = "INSERT INTO ".$db_prefix."schedule_device SET 
+					user_id='".$user['user_id']."', 
+					device_id='".$deviceID."',  
+					send_to_mail='". $sendTo_mail ."',
+					send_push='". $send_push ."',
+					notification_mail_primary='". $mail_primary ."',
+					notification_mail_secondary='". $mail_secondary ."',
+                                        push_message='". $push_message ."'";
 		$result = $mysqli->query($query);
 		
 
@@ -364,12 +426,15 @@
 		$type = clean($_POST['type']);
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
+		$send_push = clean($_POST['send_push']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
 
 		$deviceID = clean($_POST['deviceID']);
 		$device_action = clean($_POST['device_action']);
 
+                if (empty($sendTo_mail)) $sendTo_mail = 0;
+                if (empty($mail_secondary)) $mail_secondary = " ";
 
 		// Update userdata
 		$query = "UPDATE ".$db_prefix."schedule SET 
@@ -380,7 +445,8 @@
 					repeat_alert='".$repeat."', 
 					device='".$deviceID."', 
 					device_set_state='".$device_action."', 
-					send_to_mail='".$sendTo_mail."', 
+					send_to_mail='".$sendTo_mail."',
+					send_push='". $send_push ."',
 					notification_mail_primary='".$mail_primary."', 
 					notification_mail_secondary='".$mail_secondary."' 
 					WHERE notification_id='".$getID."'";
@@ -391,7 +457,56 @@
 		header("Location: ?page=settings&view=schedule&msg=01");
 		exit();
 	}
+	if ($action == "updateSchedule_device") {
+		
+		// Get POST data
+		$deviceID = clean($_POST['deviceID']);
+		$sendTo_mail = clean($_POST['sendTo_mail']);
+		$send_push = clean($_POST['send_push']);
+		$mail_primary = clean($_POST['mail_primary']);
+		$mail_secondary = clean($_POST['mail_secondary']);
+                $push_message = clean($_POST['push_message']);
+                
+                if (empty($sendTo_mail)) $sendTo_mail = 0;
+                if (empty($mail_secondary)) $mail_secondary = " ";
+                if (empty($push_message)) $push_message = " ";
 
+
+		// Update userdata
+		$query = "UPDATE ".$db_prefix."schedule_device SET 
+					user_id='".$user['user_id']."', 
+					device_id='".$deviceID."',  
+					send_to_mail='". $sendTo_mail ."',
+					send_push='". $send_push ."',
+					notification_mail_primary='". $mail_primary ."',
+					notification_mail_secondary='". $mail_secondary ."',
+                                        push_message='". $push_message ."'
+					WHERE notification_id='".$getID."'";
+		$result = $mysqli->query($query);
+		
+
+		// Redirect
+		header("Location: ?page=settings&view=schedule&msg=01");
+		exit();
+	}
+	if ($action == "mailcontrol") {
+		
+		// Update userdata
+		$query = "UPDATE ".$db_prefix."schedule_device SET 
+					send_to_mail='". $state ."'
+					WHERE notification_id='".$getID."'";
+		$result = $mysqli->query($query);
+                exit();
+	}
+	if ($action == "pushcontrol") {
+		
+		// Update userdata
+		$query = "UPDATE ".$db_prefix."schedule_device SET 
+					send_push='". $state ."'
+					WHERE notification_id='".$getID."'";
+		$result = $mysqli->query($query);
+                exit();
+	}
 
 
 	/* Delete schedule
@@ -405,7 +520,15 @@
 		header("Location: ?page=settings&view=schedule&msg=02");
 		exit();
 	}
+	if ($action == "deleteSchedule_device") {
 
+		$query = "DELETE FROM ".$db_prefix."schedule_device WHERE user_id='".$user['user_id']."' AND notification_id='".$getID."'";
+		$result = $mysqli->query($query);
+
+		// Redirect
+		header("Location: ?page=settings&view=schedule&msg=02");
+		exit();
+	}
 
 
 ?>

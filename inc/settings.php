@@ -9,10 +9,10 @@
 
     if (isset($_GET['view'])) {
       $view = clean($_GET['view']);
-    } else {
-      header("Location: ?page=settings&view=user&action=edit&id={$user['user_id']}");
-      exit();
-    }
+    } //else {
+      //header("Location: ?page=settings&view=user&action=edit&id={$user['user_id']}");
+      //exit();
+    //}
 
   ?>
 
@@ -32,6 +32,7 @@
             <?php
               if ($view == "general") $vActive_general = "active";
               if ($view == "user") $vActive_user = "active";
+              if ($view == "sensors") $vActive_sensors = "active";
               if ($view == "share") $vActive_share = "active";
               if ($view == "notifications") $vActive_notifications = "active";
               if ($view == "schedule") $vActive_schedule = "active";
@@ -42,17 +43,18 @@
 
 
 
-              echo "<li class='$vActive_user'><a href='?page=settings&view=user&action=edit&id={$user['user_id']}'>{$lang['Userprofile']}</a></li>";
-              echo "<li class='$vActive_share'><a href='?page=settings&view=share'>{$lang['Shared sensors']}</a></li>";
-              echo "<li class='$vActive_schedule'><a href='?page=settings&view=schedule'>{$lang['Schedule']}</a></li>";
+              echo "<li class='$vActive_user'><a href='?page=settings&view=user&action=edit&id={$user['user_id']}'><i class='icon-user hidden-tablet'></i>{$lang['Userprofile']}</a></li>";
+              echo "<li class='$vActive_sensors'><a href='?page=settings&view=sensors'><i class='icon-tint hidden-tablet'></i>{$lang['Sensors']}</a></li>";
+              echo "<li class='$vActive_share'><a href='?page=settings&view=share'><i class='icon-globe hidden-tablet'></i>{$lang['Shared sensors']}</a></li>";
+              echo "<li class='$vActive_schedule'><a href='?page=settings&view=schedule'><i class='icon-calendar hidden-tablet'></i>{$lang['Schedule']}</a></li>";
               //echo "<li class='$vActive_telldusTest'><a href='?page=settings&view=telldus_test'>{$lang['Telldus connection test']}</a></li>";
 
               if ($user['admin'] == 1) {
                 echo "<li class='nav-header'>Admin</li>";
 
-                echo "<li class='$vActive_general'><a href='?page=settings&view=general'>".$lang['Page settings']."</a></li>";
-                echo "<li class='$vActive_users'><a href='?page=settings&view=users'>".$lang['Users']."</a></li>";
-                echo "<li class='$vActive_cron'><a href='?page=settings&view=cron'>".$lang['Test cron-files']."</a></li>";
+                echo "<li class='$vActive_general'><a href='?page=settings&view=general'><i class='icon-home hidden-tablet'></i>".$lang['Page settings']."</a></li>";
+                echo "<li class='$vActive_users'><a href='?page=settings&view=users'><i class='icon-user hidden-tablet'></i>".$lang['Users']."</a></li>";
+                echo "<li class='$vActive_cron'><a href='?page=settings&view=cron'><i class='icon-hdd hidden-tablet'></i>".$lang['Test cron-files']."</a></li>";
               }
             ?>
 
@@ -69,7 +71,11 @@
       		if (isset($_GET['view'])) {
       			include("inc/settings_" . $view . ".php");
       		} else {
+		  if ($user['admin'] == 1) 
       			include("inc/settings_general.php");
+			else
+			  header("Location: ?page=settings&view=user&action=edit&id={$user['user_id']}");
+			  exit();
       		}
       	?>
       </div>

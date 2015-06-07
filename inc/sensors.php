@@ -1,7 +1,16 @@
+<script type="text/javascript">
+	$(function() {
+        $('.table-hover tr').click(function() {
+            var rowId = $(this).attr("row-key");
+	    var rowName = $(this).attr("row-name");
+            window.location="?page=sensors&sensor=yes&id="+rowId+"&name="+rowName;
+        });
+  });
+</script>
 <?php
 	
 	if (!$telldusKeysSetup) {
-		echo "No keys for Telldus has been added... Keys can be added under <a href='?page=settings&view=user'>your userprofile</a>.";
+		echo "No keys for Telldus has been added... Keys can be added under <a href='getRequestToken.php'>your userprofile</a>.";
 		exit();
 	}
 
@@ -44,10 +53,12 @@
 			$online = trim($sensorData['online']);
 			$editable = trim($sensorData['editable']);
 
-			$monitorSensor = 0;
 			$monitorSensor = getField("monitoring", "".$db_prefix."sensors", "WHERE sensor_id='".$sensorData['id']."'");
 			$publicValue = getField("public", "".$db_prefix."sensors", "WHERE sensor_id='".$sensorData['id']."'");
-
+			if ($monitorSensor == NULL || $monitorSensor == "")
+				$monitorSensor = 1;
+			if ($publicValue == NULL || $publicValue == "")
+				$publicValue = 0;			
 			// Use REPLACE INTO to overwrite with device_id as primary
 			$query = "REPLACE INTO ".$db_prefix."sensors SET 
 						user_id='".$user['user_id']."', 
@@ -94,6 +105,11 @@
 
 	/* Sensors
 	--------------------------------------------------------------------------- */
+	$query = "SELECT * FROM ".$db_prefix."sensors WHERE user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
+	$result = $mysqli->query($query);
+				
+	if ($result->num_rows > 0) {
+	
 	echo "<div class='well'>";
 		echo "<table class='table table-striped table-hover'>";
 			echo "<thead class='hidden-phone'>";
@@ -109,15 +125,14 @@
 			
 			echo "<tbody>";
 
-				$query = "SELECT * FROM ".$db_prefix."sensors WHERE user_id='{$user['user_id']}' ORDER BY name ASC LIMIT 100";
-				$result = $mysqli->query($query);
-
 				while ($row = $result->fetch_array()) {
 					
 					$sValueQuery = $mysqli->query("SELECT temp_value, humidity_value, time_updated FROM ".$db_prefix."sensors_log WHERE sensor_id='{$row['sensor_id']}' ORDER BY time_updated DESC LIMIT 1");
 					$sValues = $sValueQuery->fetch_array();
+					if ($_GET['id'] == $row['sensor_id']) $klass = "info";
 
-					echo "<tr>";
+					echo "<tr row-key='{$row['sensor_id']}' row-name='{$row['name']}' class='{$klass}'>";
+					unset($klass);
 						echo "<td>";
 							echo "<a href='?page=sensors_data&id={$row['sensor_id']}'><span class='hidden-phone'>#{$row['sensor_id']}: </span>{$row['name']}</a>";
 							echo "<div class='visible-phone'>" . ago($sValues['time_updated']) . "</div>";
@@ -142,7 +157,7 @@
 							}
 
 							else {
-								echo "<a class='btn btn-inverse' href='?page=sensors_exec&action=setSensorPublic&id={$row['sensor_id']}'>{$lang['Non public']}</a>";
+								echo "<a class='btn btn-info' href='?page=sensors_exec&action=setSensorPublic&id={$row['sensor_id']}'>{$lang['Non public']}</a>";
 							}
 
 							echo " &nbsp; ";
@@ -157,8 +172,23 @@
 
 					echo "</tr>";
 				}
+				
+				
+				
+
 
 
 			echo "</tbody>";
 		echo "</table>";
 	echo "</div>";
+	
+	if ($_GET['sensor'] == "yes") {
+	include("chart_sensor.php");
+	include("report_limits.php");
+	}
+	
+	}
+	
+	else echo "<div class='alert'>{$lang['Nothing to display']}</div>";
+
+?>

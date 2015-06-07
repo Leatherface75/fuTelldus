@@ -5,6 +5,15 @@
 	if (isset($_GET['msg'])) {
 		if ($_GET['msg'] == 01) echo "<div class='alert alert-success'>{$lang['Data saved']}</div>";
 	}
+
+		/* Check access
+	--------------------------------------------------------------------------- */
+	if ($user['admin'] != 1) {
+			header("Location: ?page=settings&view=user&action=edit&id={$user['user_id']}");
+			exit();
+	}
+	
+
 ?>
 
 
@@ -65,6 +74,19 @@
 
 				echo "</div>";
 			echo "</div>";
+			
+				echo "<div class='control-group'>";
+					echo "<div class='controls'>";
+
+						echo "<label class='checkbox'>";
+							if ($config['log_activity'] == 1)
+								$logchecked = "checked='checked'";
+								echo "<input type='checkbox' name='log' value='1' $logchecked> " . $lang['Log_activity'];
+
+				        echo "</label>";
+
+					echo "</div>";
+				echo "</div>";
 		?>
 
 	</fieldset>

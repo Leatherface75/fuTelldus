@@ -75,7 +75,7 @@
 			// Set remember me
 			if ($remember == 1) {
 				$expire=time()+60*60*24*365;
-				setcookie("fuTelldus_user_loggedin", $userLogin['user_id'], $expire);
+				setcookie("user_loggedin", $userLogin['user_id'], $expire);
 			}
 
 

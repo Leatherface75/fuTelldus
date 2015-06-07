@@ -1,3 +1,18 @@
+<script src="lib/jscripts/futelldus_togl.js"></script>
+<script type="text/javascript">
+	$(function() {
+        $('.klicka').click(function() {
+            var rowId = $(this).attr("row-id");
+	    var rowName = $(this).attr("row-action");
+            mailControl(rowName, rowId);
+        });
+        $('.klicka2').click(function() {
+            var rowId = $(this).attr("row-id");
+	    var rowName = $(this).attr("row-action");
+            pushControl(rowName, rowId);
+        });
+  });
+</script>
 <?php
 
 
@@ -10,7 +25,7 @@
 
 	/* Set parameters
 	--------------------------------------------------------------------------- */
-	if ($action == "edit") {
+	if ($action == "editsensor") {
 		$query = "SELECT * FROM ".$db_prefix."schedule WHERE notification_id='$getID' LIMIT 1";
 	    $result = $mysqli->query($query);
 	    $row = $result->fetch_array();
@@ -22,28 +37,42 @@
 	    $repeat_alert = $row['repeat_alert'];
 	    $device = $row['device'];
 	    $device_set_state = $row['device_set_state'];
-	    $send_to_mail = $row['send_to_mail'];
-	    $mail_primary = $row['notification_mail_primary'];
-	    $mail_secondary = $row['notification_mail_secondary'];
+	    $send_to_mail_sensor = $row['send_to_mail'];
+	    $send_push_sensor = $row['send_push'];
+	    $mail_primary_sensor = $row['notification_mail_primary'];
+	    $mail_secondary_sensor = $row['notification_mail_secondary'];
 
 	} else {
 		$warning_value = 30;
 		$repeat_alert = 60;
+		$send_to_mail_sensor = 1;
+		$send_push_sensor = 0;
+		$mail_primary_sensor = $user['mail'];
+		$mail_secondary_sensor = "";
+	}
+	if ($action == "editdevice") {
+		$query = "SELECT * FROM ".$db_prefix."schedule_device WHERE notification_id='$getID' LIMIT 1";
+	    $result = $mysqli->query($query);
+	    $row = $result->fetch_array();
+
+	    $deviceID = $row['device_id'];
+	    $send_to_mail = $row['send_to_mail'];
+	    $send_push = $row['send_push'];
+	    $mail_primary = $row['notification_mail_primary'];
+	    $mail_secondary = $row['notification_mail_secondary'];
+	    $push_message = $row['push_message'];
+
+	} else {
 		$send_to_mail = 1;
+		$send_push = 0;
 		$mail_primary = $user['mail'];
 		$mail_secondary = "";
+		$push_message = "";
 	}
-
 
 
 	
 	echo "<h4>".$lang['Schedule']."</h4>";
-
-
-	echo "<div style='float:right; margin-top:-35px; margin-right:15px;'>";
-		echo "<a class='btn btn-success' href='?page=settings&view=schedule&action=add'>{$lang['Create new']}</a>";
-	echo "</div>";
-
 
 	if (isset($_GET['msg'])) {
 		if ($_GET['msg'] == 01) echo "<div class='alert alert-info'>".$lang['Data saved']."</div>";
@@ -58,9 +87,9 @@
 
 	/* Form
 	--------------------------------------------------------------------------- */
-	if ($action == "add" || $action == "edit") {
+	if ($action == "addsensor" || $action == "editsensor") {
 
-		if ($action == "edit") {
+		if ($action == "editsensor") {
 			echo "<div class='alert'>";
 			echo "<form action='?page=settings_exec&action=updateSchedule&id=$getID' method='POST'>";
 		} else {
@@ -141,7 +170,7 @@
 		   				$result = $mysqli->query($query);
 
 		   				echo "<select style='width:250px;' name='deviceID'>";
-		   					echo "<option value=''>-- {$lang['No device action']}</option>";
+		   					echo "<option value='0'>-- {$lang['No device action']} --</option>";
 
 			   				while ($row = $result->fetch_array()) {
 			   					if ($device == $row['device_id'])
@@ -154,8 +183,18 @@
 
 
 		   				echo "<select style='width:70px; margin-left:10px;' name='device_action'>";
-		   					echo "<option value='1'>{$lang['On']}</option>";
+						if ($device_set_state == 1) {
+		   					echo "<option value='1' selected='selected'>{$lang['On']}</option>";
 		   					echo "<option value='0'>{$lang['Off']}</option>";
+						}
+						elseif ($device_set_state == 0) {
+		   					echo "<option value='1'>{$lang['On']}</option>";
+		   					echo "<option value='0' selected='selected'>{$lang['Off']}</option>";
+						}
+						else {
+		   					echo "<option value='1'>{$lang['On']}</option>";
+		   					echo "<option value='0'>{$lang['Off']}</option>";							
+						}
 		   				echo "</select>";
 
 					echo "</td>";
@@ -187,12 +226,119 @@
 					echo "<td>{$lang['Send to']}</td>";
 					echo "<td>";
 						echo "<label class='checkbox'>";
-								if ($send_to_mail == 1) $sendToMailChecked = "checked='checked'";
+								if ($send_to_mail_sensor == 1) $sendToMailChecked = "checked='checked'";
 					          echo "<input type='checkbox' name='sendTo_mail' value='1' $sendToMailChecked> {$lang['Email']}";
 					        echo "</label>";
+						if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
+						echo "<label class='checkbox'>";
+								if ($send_push_sensor == 1) $sendToPush = "checked='checked'";
+					          echo "<input type='checkbox' name='send_push' value='1' $sendToPush> {$lang['Push notifications']}";
+					        echo "</label>";
+						}
 					echo "</td>";
 				echo "</tr>";
 
+
+				// Primary mail
+				echo "<tr>";
+					echo "<td>{$lang['Primary']} {$lang['Email']}</td>";
+					echo "<td>";
+						echo "<input style='width:350px;' type='text' name='mail_primary' id='repeat' value='$mail_primary_sensor' />";
+					echo "</td>";
+				echo "</tr>";
+
+				// Secondary mail
+				echo "<tr>";
+					echo "<td>{$lang['Secondary']} {$lang['Email']}</td>";
+					echo "<td>";
+						echo "<input style='width:350px;' type='text' name='mail_secondary' id='repeat' value='$mail_secondary_sensor' />";
+					echo "</td>";
+				echo "</tr>";
+
+
+
+				// Submit
+				echo "<tr>";
+					echo "<td colspan='2'>";
+						echo "<div style='text-align:right;'>";
+							if ($action == "edit") echo "<a class='btn' href='?page=settings&view=schedule'>{$lang['Cancel']}</a> &nbsp; ";
+							echo "<input class='btn btn-primary' type='submit' name='submit' value='".$lang['Save data']."' />";
+						echo "</div>";
+					echo "</td>";
+				echo "</tr>";
+
+			echo "</table>";
+		echo "</form>";
+		echo "</div>";
+	}
+		if ($action == "adddevice" || $action == "editdevice") {
+
+		if ($action == "editdevice") {
+			echo "<div class='alert'>";
+			echo "<form action='?page=settings_exec&action=updateSchedule_device&id=$getID' method='POST'>";
+		} else {
+			echo "<div class='well'>";
+			echo "<form action='?page=settings_exec&action=addSchedule_device' method='POST'>";
+		}
+
+
+			echo "<table width='100%'>";
+
+				// Device
+				echo "<tr>";
+					echo "<td>{$lang['Devices']}</td>";
+					echo "<td>";
+						$query = "SELECT * FROM ".$db_prefix."devices WHERE user_id='".$user['user_id']."' AND type='device' ORDER BY name ASC LIMIT 100";
+		   				$result = $mysqli->query($query);
+
+		   				echo "<select style='width:180px;' name='deviceID'>";
+		   				while ($row = $result->fetch_array()) {
+		   					if ($deviceID == $row['device_id'])
+		   						echo "<option value='{$row['device_id']}' selected='selected'>{$row['device_id']}: {$row['name']}</option>";
+
+		   					else
+		   						echo "<option value='{$row['device_id']}'>{$row['device_id']}: {$row['name']}</option>";
+		   				}
+		   				echo "</select>";
+					echo "</td>";
+				echo "</tr>";
+
+
+				echo "<tr><td colspan='2'><br /></td></tr>"; // Space
+
+
+
+
+				echo "<tr><td colspan='2'><h5>{$lang['Notifications']}</h5></td></tr>"; // Headline
+
+
+				// Send to
+				echo "<tr>";
+					echo "<td>{$lang['Send to']}</td>";
+					echo "<td>";
+						echo "<label class='checkbox'>";
+								if ($send_to_mail == 1) $sendToMailChecked = "checked='checked'";
+					          echo "<input type='checkbox' name='sendTo_mail' value='1' $sendToMailChecked> {$lang['Email']}";
+					        echo "</label>";
+						if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
+						echo "<label class='checkbox'>";
+								if ($send_push == 1) $sendToPush = "checked='checked'";
+					          echo "<input type='checkbox' name='send_push' value='1' $sendToPush> {$lang['Push notifications']}";
+					        echo "</label>";
+						}
+					echo "</td>";
+				echo "</tr>";
+				
+				// Push Message
+				if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
+					echo "<tr>";
+						echo "<td>{$lang['Push message']}</td>";
+						echo "<td>";
+							echo "<input style='width:350px;' type='text' name='push_message' id='repeat' value='$push_message' />";
+						echo "</td>";
+					echo "</tr>";
+					echo "<tr><td colspan='2'><br /></td></tr>"; // Space
+				}
 
 				// Primary mail
 				echo "<tr>";
@@ -233,7 +379,6 @@
 
 
 
-
 	/* Show notifications
 	--------------------------------------------------------------------------- */
 	$query = "SELECT * 
@@ -243,6 +388,12 @@
 			  ORDER BY ".$db_prefix."schedule.sensor_id ASC";
     $result = $mysqli->query($query);
     $numRows = $result->num_rows;
+	echo "<legend>".$lang['Sensors']."</legend>";
+	if ($action != "addsensor" && $action != "adddevice" && $action != "editsensor" && $action != "editdevice") {
+		echo "<div style='float:right; margin-right:15px;'>";
+			echo "<a class='btn btn-success' href='?page=settings&view=schedule&action=addsensor'>" . $lang['Create new'] . "</a>";
+		echo "</div>";
+	}
 
     if ($numRows > 0) {
 
@@ -252,6 +403,8 @@
 					//echo "<th>".$lang['Name']."</th>";
 					echo "<th>".$lang['Rule']."</th>";
 					echo "<th>".$lang['Email']."</th>";
+					if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app']))
+					echo "<th>".$lang['Push notifications']."</th>";
 					echo "<th>".$lang['Repeat every']."</th>";
 					echo "<th>".$lang['Last sent']."</th>";
 					echo "<th></th>";
@@ -284,7 +437,7 @@
 		    					$unit = "%";
 		    				}
 
-		    				echo "{$lang['If']} <b>$typeDesc</b> ".strtolower($lang['Is'])." <b>$directionDesc</b> ".strtolower($lang['Than'])." <b>{$row['warning_value']}" . $unit . "</b>";
+		    				echo "{$lang['If']} <b>$typeDesc</b> ".strtolower($lang['Is'])." <b>$directionDesc</b> <b>{$row['warning_value']}" . $unit . "</b>";
 
 		    				if (!empty($row['device'])) {
 		    					$getDeviceName = getField("name", "".$db_prefix."devices", "WHERE device_id='{$row['device']}'");
@@ -302,6 +455,15 @@
 		    				if ($row['send_to_mail'] == 1) echo "<img style='height:16px;' src='images/metro_black/check.png' alt='yes' />";
 		    				else echo "<img style='height:16px;' src='images/metro_black/cancel.png' alt='no' />";
 		    			echo "</td>";
+					
+					
+		    			// Send to push
+					if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
+		    			echo "<td style='text-align:left;'>";
+		    				if ($row['send_push'] == 1) echo "<img style='height:16px;' src='images/metro_black/check.png' alt='yes' />";
+		    				else echo "<img style='height:16px;' src='images/metro_black/cancel.png' alt='no' />";
+		    			echo "</td>";
+					}
 
 
 		    			// Repeat every
@@ -323,9 +485,102 @@
 									echo "<span class='caret'></span>";
 								echo "</a>";
 
-								echo "<ul class='dropdown-menu'>";
-					    			echo "<li><a href='?page=settings&view=schedule&action=edit&id={$row['notification_id']}'>Edit</a></li>";
-					    			echo "<li><a href='?page=settings_exec&action=deleteNotification&id={$row['notification_id']}'>Delete</a></li>";
+								echo "<ul class='dropdown-menu pull-right'>";
+					    			echo "<li><a href='?page=settings&view=schedule&action=editsensor&id={$row['notification_id']}'>{$lang['Edit']}</a></li>";
+					    			echo "<li><a href='?page=settings_exec&action=deleteSchedule&id={$row['notification_id']}'>{$lang['Delete']}</a></li>";
+								echo "</ul>";
+							echo "</div>";
+		    			echo "</td>";
+
+		    		echo "</tr>";
+
+		    	}
+
+    		echo "</tbody>";
+    	echo "</table>";
+    }
+
+    else echo "<div class='alert'>{$lang['Nothing to display']}</div>";
+    
+	$query = "SELECT * 
+			  FROM ".$db_prefix."schedule_device
+			  INNER JOIN ".$db_prefix."devices ON ".$db_prefix."schedule_device.device_id = ".$db_prefix."devices.device_id
+			  WHERE ".$db_prefix."devices.user_id='{$user['user_id']}' 
+			  ORDER BY ".$db_prefix."schedule_device.device_id ASC";
+    $result2 = $mysqli->query($query);
+    $numRows = $result2->num_rows;
+	echo "<legend>".$lang['Devices']."</legend>";
+	if ($action != "addsensor" && $action != "adddevice" && $action != "editsensor" && $action != "editdevice") {
+		echo "<div style='float:right; margin-right:15px;'>";
+			echo "<a class='btn btn-success' href='?page=settings&view=schedule&action=adddevice'>" . $lang['Create new'] . "</a>";
+		echo "</div>";
+	}
+
+    if ($numRows > 0) {
+
+    	echo "<table class='table table-striped table-hover'>";
+			echo "<thead>";
+				echo "<tr>";
+					//echo "<th>".$lang['Name']."</th>";
+					echo "<th>".$lang['Rule']."</th>";
+					echo "<th>".$lang['Email']."</th>";
+					if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app']))
+					echo "<th>".$lang['Push notifications']."</th>";
+					echo "<th></th>";
+				echo "</tr>";
+			echo "</thead>";
+			
+			echo "<tbody>";
+
+		    	while($row = $result2->fetch_array()) {
+
+		    		echo "<tr>";
+
+
+		    			echo "<td>";
+
+		    				// Sensorname
+		    				echo "#{$row['device_id']}: {$row['name']}<br />";
+
+
+		    				// Rule description
+
+
+		    			// Send to mail
+		    			echo "<td style='text-align:left;'>";
+		    				if ($row['send_to_mail'] == 1) echo "<img id='imgDisp{$row['notification_id']}' style='height:16px;' src='images/metro_black/check.png' alt='yes' class='klicka' row-action='0' row-id='{$row['notification_id']}' />";
+		    				else echo "<img id='imgDisp{$row['notification_id']}' style='height:16px;' src='images/metro_black/cancel.png' alt='no' class='klicka' row-action='1' row-id='{$row['notification_id']}' />";
+		    			echo "</td>";
+					
+		    			// Send to push
+					if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
+		    			echo "<td style='text-align:left;'>";
+		    				if ($row['send_push'] == 1) echo "<img id='imgDisp2{$row['notification_id']}' style='height:16px;' src='images/metro_black/check.png' alt='yes' class='klicka2' row-action='0' row-id='{$row['notification_id']}' />";
+		    				else echo "<img id='imgDisp2{$row['notification_id']}' style='height:16px;' src='images/metro_black/cancel.png' alt='no' class='klicka2' row-action='1' row-id='{$row['notification_id']}' />";
+		    			echo "</td>";
+					}
+
+
+		    			// Toggle tools
+		    			echo "<td>";
+							echo "<div class='btn-group hidden-phone' style='margin-right: -25px;'>";
+								echo "<a class='btn dropdown-toggle' data-toggle='dropdown' href='#''>";
+									echo "<span class='caret'></span>";
+								echo "</a>";
+
+								echo "<ul class='dropdown-menu pull-right'>";
+					    			echo "<li><a href='?page=settings&view=schedule&action=editdevice&id={$row['notification_id']}'>{$lang['Edit']}</a></li>";
+					    			echo "<li><a href='?page=settings_exec&action=deleteSchedule_device&id={$row['notification_id']}'>{$lang['Delete']}</a></li>";
+								echo "</ul>";
+							echo "</div>";
+								echo "<div class='btn-group visible-phone'>";
+								echo "<a class='btn dropdown-toggle' data-toggle='dropdown' href='#''>";
+									echo "<span class='caret'></span>";
+								echo "</a>";
+
+								echo "<ul class='dropdown-menu pull-right'>";
+					    			echo "<li><a href='?page=settings&view=schedule&action=editdevice&id={$row['notification_id']}'>{$lang['Edit']}</a></li>";
+					    			echo "<li><a href='?page=settings_exec&action=deleteSchedule_device&id={$row['notification_id']}'>{$lang['Delete']}</a></li>";
 								echo "</ul>";
 							echo "</div>";
 		    			echo "</td>";

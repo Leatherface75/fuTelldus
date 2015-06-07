@@ -67,6 +67,22 @@
 		// Mail it
 		mail($to, $subject, $message, $headers);
 	}
+	
+	
+	function sendPush($token, $user, $title, $message) {	
+		curl_setopt_array($ch = curl_init(), array(
+			CURLOPT_URL => "https://api.pushover.net/1/messages.json",
+			CURLOPT_POSTFIELDS => array(
+				"token" => "{$token}",
+				"user" => "{$user}",
+				"title" => "{$title}",
+				"message" => "{$message}",
+				),
+				CURLOPT_SAFE_UPLOAD => true,
+		));
+		curl_exec($ch);
+		curl_close($ch);
+	}
 
 	/*
 	function sendMail($to, $subject, $message) {

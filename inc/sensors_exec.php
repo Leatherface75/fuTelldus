@@ -22,6 +22,93 @@
 	}
 
 
+	/* delete sensor
+	--------------------------------------------------------------------------- */
+	if ($action == "deleteSensor") {
+		
+		require_once 'HTTP/OAuth/Consumer.php';
+
+
+		$consumer = new HTTP_OAuth_Consumer(constant('PUBLIC_KEY'), constant('PRIVATE_KEY'), constant('TOKEN'), constant('TOKEN_SECRET'));
+
+		$params = array('id' => $getID, 'ignore' => '1');
+		$response = $consumer->sendRequest(constant('REQUEST_URI').'/sensor/setIgnore', $params, 'GET');
+
+		/*
+		echo '<pre>';
+			echo( htmlentities($response->getBody()));
+		echo '</pre>';
+		*/
+		
+
+		$xmlString = $response->getBody();
+		$xmldata = new SimpleXMLElement($xmlString);
+
+		$query = "DELETE FROM ".$db_prefix."sensors WHERE sensor_id='".$getID."'";
+		$result = $mysqli->query($query);
+
+		// Redirect
+		header("Location: ?page=settings&view=sensors&msg=03");
+		exit();
+	}
+
+
+	/* ignore sensor
+	--------------------------------------------------------------------------- */
+	if ($action == "ignoreSensor") {
+
+		require_once 'HTTP/OAuth/Consumer.php';
+
+
+		$consumer = new HTTP_OAuth_Consumer(constant('PUBLIC_KEY'), constant('PRIVATE_KEY'), constant('TOKEN'), constant('TOKEN_SECRET'));
+
+		$params = array('id' => $getID, 'ignore' => '1');
+		$response = $consumer->sendRequest(constant('REQUEST_URI').'/sensor/setIgnore', $params, 'GET');
+
+		/*
+		echo '<pre>';
+			echo( htmlentities($response->getBody()));
+		echo '</pre>';
+		*/
+		
+
+		$xmlString = $response->getBody();
+		$xmldata = new SimpleXMLElement($xmlString);
+
+		// Redirect
+		header("Location: ?page=settings&view=sensors&msg=01");
+		exit();
+	}
+	
+	
+	/* activate sensor
+	--------------------------------------------------------------------------- */
+	if ($action == "activateSensor") {
+
+		require_once 'HTTP/OAuth/Consumer.php';
+
+
+		$consumer = new HTTP_OAuth_Consumer(constant('PUBLIC_KEY'), constant('PRIVATE_KEY'), constant('TOKEN'), constant('TOKEN_SECRET'));
+
+		$params = array('id' => $getID, 'ignore' => '0');
+		$response = $consumer->sendRequest(constant('REQUEST_URI').'/sensor/setIgnore', $params, 'GET');
+
+		/*
+		echo '<pre>';
+			echo( htmlentities($response->getBody()));
+		echo '</pre>';
+		*/
+		
+
+		$xmlString = $response->getBody();
+		$xmldata = new SimpleXMLElement($xmlString);
+
+		// Redirect
+		header("Location: ?page=settings&view=sensors&msg=02");
+		exit();
+	}
+
+
 	/* remove sensor
 	--------------------------------------------------------------------------- */
 	if ($action == "removeSensor") {

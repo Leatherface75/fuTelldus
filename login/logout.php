@@ -4,8 +4,8 @@
 
 	unset($_SESSION['fuTelldus_user_loggedin']);
 
-	setcookie("fuTelldus_user_loggedin", "", time()-3600);
+	setcookie("user_loggedin", "", time()-3600);
 
-	header("Location: index.php?msg=02");
+	header("Location: ../login/index.php?msg=02");
 	exit();
 ?>

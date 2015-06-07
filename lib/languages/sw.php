@@ -13,16 +13,16 @@ $lang = array(
 	"Sensors" => "Sensorer",
 	"Chart" => "Graf",
 	"Report" => "Rapport",
-	"Lights" => "Ljus",
+	"Lights" => "Enheter",
 	"Settings" => "Inställningar",
 	"Log out" => "Logga ut",
 
 	"Page settings" => "Sidinställningar",
 	"Users" => "Användare",
-    "Shared sensors" => "Delade sensorer",
+        "Shared sensors" => "Delade sensorer",
 	"Test cron-files" => "Testa cron-filer",
 	"View public page" => "Visa allmän sida",
-	"View public sensors" => "Visa allmän sensorer",
+	"View public sensors" => "Visa allmäna sensorer",
 
 
 
@@ -31,6 +31,7 @@ $lang = array(
 	"Userprofile" => "Användarprofil",
 	"My profile" => "Min profil",
 	"Not logged in" => "Inte inloggad",
+        "Last_active" => "Senast aktiv",
 	
 
 	// Messages
@@ -45,6 +46,9 @@ $lang = array(
 	"Nothing to display" => "Inget att visa",
 	"Data saved" => "Data sparat",
 	"Deleted" => "Borttaget",
+        "Sensor added to ignored" => "Sensor ignorerad",
+	"Sensor removed" => "Sensor borttagen",
+        "Sensor removed ignored" => "Sensor aktiverad",
 	
 	
 	// Form
@@ -55,6 +59,7 @@ $lang = array(
 	"User language" => "Språk",
 	"Save data" => "Spara data",
 	"Create user" => "Skapa användare",
+	"Create new" => "Skapa ny",
 	"Page title" => "Titel på sidan",
 	"General settings" => "Generella inställningar",
 	"Delete" => "Ta bort",
@@ -67,8 +72,10 @@ $lang = array(
 	"Jump description" => "Hoppa över valda nummer av loggad tid. Temperaturen loggas var 15:e minut, så ett hopp på 4 kommer att visa ett resultat på 1 timme. 4*24=96 för en dag.",
 	"XML URL" => "XML URL",
 	"Description" => "Beskrivning",
-	"Select chart" => "Velg graf",
-	"Default chart" => "Bruk standard graf",
+        "Outgoing mailaddress" => "Utgående mailadress",
+        "Log_activity" => "Logga senaste aktivitet",
+	"Select chart" => "Välj graf",
+	"Default chart" => "Använd standard graf",
 	"Chart max days" => "Visa graf för max dagar tillbaka i tiden",
 
 
@@ -82,6 +89,14 @@ $lang = array(
 	"Sync lists everytime" => "Synk listar varje gång",
 	"List synced" => "listan synkroniserat",
 
+	// Pushover
+	"Pushover appkey" => "Pushover app-nyckel",
+	"Pushover userkey" => "Pushover användar-nyckel",
+        "Push notifications" => "Push-notifikationer",
+        "Push notification" => "Enhet %%device%% har aktiverats.",
+	"Push mail_notification" => "Varning: Värdet är %%value%% på sensor %%sensor%%.",
+        "Push message" => "Push meddelande",
+
 
 	// Temperature & chart
 	"Latest readings" => "Senaste avläsningar",
@@ -90,6 +105,7 @@ $lang = array(
 	"Combine charts" => "Kombinerade grafer",
 	"Split charts" => "Delade grafer",
 	"View chart" => "Visa graf",
+        "Chart_type" => "Graftyp",
 
 
 	// Sensors
@@ -97,9 +113,11 @@ $lang = array(
 	"Sensorname" => "Sensornamn",
 	"Sensordata" => "Sensordata",
 	"Sensor ID" => "Sensor ID",
-	"Sensors description" => "<p>Lägg till dina sensorer till cronjob för att logga sensordata i databasen.</p><p>Sensorlistan hämtas med nycklarna som är tillagda under <a href='?page=settings&view=user'>din användarprofil</a>.</p>",
-	"Non public" => "Icke offentlig",
-	"Public" => "Offentliga",
+	"Sensors description" => "<p>Lägg till dina sensorer till cronjob för att logga sensordata i databasen.</p><p>Sensorlistan hämtas med nycklarna som är tillagda under <a href='?page=settings&view=user&action=edit&id={$user['user_id']}'>din användarprofil</a>.</p>",
+	"Non public" => "Inte offentlig",
+	"Public" => "Offentlig",
+        "Ignore" => "Ignorera",
+        "Activate" => "Aktivera",
 
 
 	// Shared sensors
@@ -110,20 +128,20 @@ $lang = array(
 	"Schedule" => "Schema",
 	"Notifications" => "Notifikationer",
 	"Repeat every" => "Upprepa alla",
-	"Higher than" => "Högre än",
-	"Lower than" => "Lägre än",
+	"Higher than" => "H&ouml;gre &auml;n",
+	"Lower than" => "L&auml;gre &auml;n",
 	"Send to" => "Skicka till",
 	"Send warning" => "Skicka varning",
 	"Rule" => "Regel",
 	"Last sent" => "Senast skickat",
-	"Device action" => "Device action",
-	"No device action" => "Ingen åtgärd",
+	"Device action" => "Enhets åtgärd",
+	"No device action" => "Ingen &aring;tg&auml;rd",
 
 	// Mail notifications
-	"Notification mail low temperature" => "Varning: Temperatur är låg<br /><br />Sensor: %%sensor%%<br />Temperatur är %%value%% &deg;",
-	"Notification mail high temperature" => "Varning: Temperatur är hög!<br /><br />Sensor: %%sensor%%<br />Temperatur är %%value%% &deg;",
-	"Notification mail low humidity" => "Varning: Fuktighetsnivån är låg!<br /><br />Sensor: %%sensor%%<br />Fuktighetsnivån är %%value%% &deg;",
-	"Notification mail high humidity" => "Varning: Fuktighetsnivån är hög!<br /><br />Sensor: %%sensor%%<br />Fuktighetsnivån är %%value%% &deg;",
+	"Notification mail low temperature" => "Varning: Temperatur &auml;r l&aring;g<br /><br />Sensor: %%sensor%%<br />Temperatur &auml;r %%value%% &deg;",
+	"Notification mail high temperature" => "Varning: Temperatur &auml;r h&ouml;g!<br /><br />Sensor: %%sensor%%<br />Temperatur &auml;r %%value%% &deg;",
+	"Notification mail low humidity" => "Varning: Fuktighetsniv&aring;n &auml;r l&aring;g!<br /><br />Sensor: %%sensor%%<br />Fuktighetsniv&aring;n &auml;r %%value%% &deg;",
+	"Notification mail high humidity" => "Varning: Fuktighetsniv&aring;n &auml;r h&ouml;g!<br /><br />Sensor: %%sensor%%<br />Fuktighetsniv&aring;n &auml;r %%value%% &deg;",
 
 
 
@@ -132,10 +150,28 @@ $lang = array(
 	"Off" => "Av",
 	"Groups" => "Grupper",
 	"Devices" => "Enheter",
+        "Device History" => "Historia för enheten",
+        "State" => "Status",
+   
+   
 
+        // Events
+        "Events" => "Händelser",
+        "Schedules" => "Scheman",
+        "Device" => "Enhet",
+        "Weekdays" => "Veckodagar",
+        "Monday" => "Måndag",
+        "Tuesday" => "Tisdag",
+        "Wednesday" => "Onsdag",
+        "Thursday" => "Torsdag",
+        "Friday" => "Fredag",
+        "Saturday" => "Lördag",
+        "Sunday" => "Söndag",
 
-
+        
+        
 	// Div
+        "Link Webapp" => "Länk för att skapa en web-applikation på mobila enheter",
 	"Language" => "Språk",
 	"New" => "Ny",
 	"Repeat" => "Upprepa",
@@ -156,7 +192,7 @@ $lang = array(
 	"Last update" => "Senast uppdaterad",
 	"Monitor" => "Övervaka",
 	"Protocol" => "Protokoll",
-	"Timezone offset" => "Timezon offset",
+	"Timezone offset" => "Tidszons skillnad",
 	"Time" => "Tid",
 	"Active" => "Aktiv",
 	"Disabled" => "Avaktiverad",
@@ -175,10 +211,10 @@ $lang = array(
 	"Action" => "Action",
 
 		// send warning IF temperature IS more/less THAN   / FOR sensor ...
-		"If" => "If",
-		"Is" => "Is",
-		"Than" => "Than",
-		"For" => "For",
+		"If" => "om",
+		"Is" => "är",
+		"Than" => "än",
+		"For" => "för",
 
 
 	// Time (ago)

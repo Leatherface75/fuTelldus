@@ -95,7 +95,7 @@
             	echo "</div>";
 
             	echo "<div class='sensor-temperature'>";
-            		echo "<img src='../images/thermometer02.png' alt='icon' />";
+            		echo "<img src='../images/therm.png' alt='icon' />";
             		echo "{$sensorData['temp_value']}&deg;";
             	echo "</div>";
 
@@ -107,7 +107,7 @@
             	}
 
             	echo "<div class='sensor-timeago'>";
-            		echo "<abbr class=\"timeago\" title='".date("c", $sensorData['time_updated'])."'>".date("d-m-Y H:i", $sensorData['time_updated'])."</abbr>";
+            		echo "<abbr class=\"timeago\" title='".date("c", $sensorData['time_updated'])."'>".date("Y-m-d H:i", $sensorData['time_updated'])."</abbr>";
             	echo "</div>";
 
             	echo "<div style='text-align:left; margin-top:10px;'>";

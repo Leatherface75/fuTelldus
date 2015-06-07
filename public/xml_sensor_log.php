@@ -14,7 +14,7 @@
 		$query = "SELECT * 
 				  FROM ".$db_prefix."sensors_log 
 				  WHERE sensor_id='$getSensorID' 
-				  ORDER BY time_updated DESC LIMIT 96";
+				  ORDER BY time_updated DESC LIMIT 144";
 		$result = $mysqli->query($query);
 
 		$getSensorName = getField("name", "".$db_prefix."sensors", "WHERE sensor_id='$getSensorID'");
@@ -27,7 +27,7 @@
 			$track->addAttribute('temp', "{$row['temp_value']}");
 			$track->addAttribute('humidity', "{$row['humidity_value']}");
 		}
-
+	
 	Header('Content-type: text/xml');
 	print($xml->asXML());
 
