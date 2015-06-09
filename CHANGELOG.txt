@@ -4,14 +4,50 @@
   _____________________________________________________________________________
 
   	- Compare data from different times in a chart
-  	- Combine humidity charts (like temperature)
   	- Highcharts
 
 
 
   CHANGELOG - fuTelldus
   _____________________________________________________________________________
-
+  
+  	07.06.2015 initial fork csoM Mod
+  	---------------------------------------------------------------
+	->	Theme/design changes.
+		- Blue menues, Blueish colorscheme, Fixed menue on mobile.
+		
+	->	More info on each sensor by clicking sensor table-row on sensors page.
+		- Highcharts combined temp & humidity.
+		- Min, Max, Mean Rebort.
+		
+	->	Ability to use combined highcharts instead of rGraph (choose in user-settings).
+		- Chose your default charttype.
+		
+	->	List Telldus Events/Schedules and ability to activate/deactivate.
+		- Click the "check" or "cancel" sign to toggle.
+		
+	->	Show device history by clicking table-row on device-page.
+		- Shows history one week back in time.
+		
+	->	Set alerts on device change state (schedule page).
+		
+	->	Option to get push-alerts on schedules (uses PushOver and Curl "Server needs to have Curl for PHP installed").
+		- You have to get an account on PushOver.net to activate the ability to recieve push-alerts, once your keys are 		filled in under your user-profile the option to get push are available.
+		
+	->	Ignore and UnIgnore Telldus sensors under settings/sensors page, posibility to delete unwanted sensor from database.
+		- Under the settings page an sensor page is added to list all sensors your tellstick recieves and there you can			activate och ignore sensors and delete them if you don't want them in your database.
+		
+	->	Public page-chart uses highcharts instead of rGraph.
+		- A combined temp/hum chart is displayed.
+		
+	->	Log users last activity (activate on general settings-page).
+		- When activated on the users-page you can se the last time a user visited the site.
+		
+	->	Mobile-device webapp login-link on user settings-page (needed to autologin on Iphones webapp).
+		- To not have to login every time when created a webapp on mobile device since the session/cookie doesn't work
+		you can use the direct login link instead.
+		
+	->	Minor bugfixes from initial release.
 
 
   	13.04.2013 (v3)
