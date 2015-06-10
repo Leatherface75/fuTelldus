@@ -144,9 +144,10 @@
 					$scheduleID = trim($scheduleData['id']);
 					$deviceID = trim($scheduleData['deviceId']);
 					$method = trim($scheduleData['method']);
-					$hour = trim($scheduleData['hour']);
-					$minute = trim($scheduleData['minute']);
-					if ($minute == "0") $minute = "00";
+					$nextRun = trim($scheduleData['nextRunTime']);
+					//$hour = trim($scheduleData['hour']);
+					//$minute = trim($scheduleData['minute']);
+					//if ($minute == "0") $minute = "00";
 					$active2 = trim($scheduleData['active']);
 					$weekdays = trim($scheduleData['weekdays']);
 
@@ -162,7 +163,8 @@
 						echo "<td>{$row['name']}</td>";
 						
 						echo "<td>";
-							echo $hour.":".$minute."<br>";
+							//echo $hour.":".$minute."<br>";
+							echo date("H:i", $nextRun) . "<br>";
 							if ($method == 1) echo "<img class='visible-phone'  style='height:16px;' src='images/on.png' alt='icon' />";
 							if ($method == 2) echo "<img class='visible-phone' style='height:16px;' src='images/off.png' alt='icon' />";
 							if ($active2 == 1) echo "<img id='imgDisp3{$scheduleID}' style='height:16px;' src='images/metro_black/check.png' alt='icon' class='klicka2 visible-phone' row-action='0' row-id='{$scheduleID}' />";
