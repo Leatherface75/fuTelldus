@@ -68,8 +68,14 @@
 
       <div class="span9">
       	<?php
-      		if (isset($_GET['view'])) {
+      		if (isset($view) && $view != "") {
+		  if (preg_match('/(http:\/\/|^\/|\.+?\/)/', $view)) echo "Error";
+		  else {
+		    if (file_exists("inc/settings_" . $view . ".php"))
       			include("inc/settings_" . $view . ".php");
+		    else
+			echo "<h2>Error 404</h2>\n<p>Sidan du letar efter finns inte l&auml;ngre!</p>\n";
+		  }
       		} else {
 		  if ($user['admin'] == 1) 
       			include("inc/settings_general.php");
