@@ -7,7 +7,7 @@
 	/* Get parameters
 	--------------------------------------------------------------------------- */
 	if (isset($_GET['id'])) $getID = clean($_GET['id']);
-	if (isset($_GET['description'])) $description = clean($_GET['description']);
+	//if (isset($_GET['description'])) $description = clean($_GET['description']);
 	if (isset($_GET['action'])) $action = clean($_GET['action']);
 	
 	
@@ -35,6 +35,9 @@
 					$eventID = $getID;
 					$deviceID = trim($eventData['deviceId']);
 					$method = trim($eventData['method']);
+				}
+				foreach($xmldata->description as $eventDesc) {
+					$description = trim($eventDesc);
 				}
 	}
 
