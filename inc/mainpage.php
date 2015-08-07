@@ -89,7 +89,7 @@
             $sensorData = $resultS->fetch_array();
 
 
-            echo "<div class='sensor-blocks well'>";
+            echo "<div class='sensor-blocks well' onclick=\"location.href='?page=sensors_data&id=$sensorID';\" style='cursor:pointer;'>";
 
             	echo "<div class='sensor-name'>";
             		echo "{$row['name']}";
@@ -137,7 +137,7 @@
 
 			    	$xmlData = simplexml_load_file($row['url']);
 
-			    	echo "<div class='sensor-blocks well'>";
+    	            echo "<div class='sensor-blocks well' onclick=\"location.href='?page=sensors_data&id=$sensorID';\" style='cursor:pointer;'>";
 
 		            	echo "<div class='sensor-name'>";
 		            		echo $row['description'];

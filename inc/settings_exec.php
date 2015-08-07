@@ -215,14 +215,20 @@
 	--------------------------------------------------------------------------- */
 	if ($action == "saveGeneralSettings") {
 
+		$result = $mysqli->query("SELECT * FROM ".$db_prefix."config");
+		while ($row = $result->fetch_array()) {
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		
 		// Get POST data
 		$pageTitle = clean($_POST['pageTitle']);
 		$mail_from = clean($_POST['mail_from']);
 		$chart_max_days = clean($_POST['chart_max_days']);
 		$language = clean($_POST['language']);
-                $log = clean($_POST['log']);
+		$log = clean($_POST['log']);
+		$navbar_layout = clean($_POST['navbar_layout']);		
 
-
+		
 		$query = "UPDATE ".$db_prefix."config SET config_value='".$pageTitle."' WHERE config_name LIKE 'pagetitle'";
 		$result = $mysqli->query($query);
 
@@ -235,7 +241,17 @@
 		$query = "UPDATE ".$db_prefix."config SET config_value='".$language."' WHERE config_name LIKE 'public_page_language'";
 		$result = $mysqli->query($query);
                 
-                $query = "UPDATE ".$db_prefix."config SET config_value='".$log."' WHERE config_name LIKE 'log_activity'";
+		if (isset($config['navbar_layout'])) {
+			$query = "UPDATE ".$db_prefix."config SET config_value='".$navbar_layout."' WHERE config_name LIKE 'navbar_layout'";			
+		} else {
+				$query = "INSERT INTO ".$db_prefix."config SET 
+					config_name='navbar_layout', 
+					config_value='".$navbar_layout."', 
+					comment=''";
+		}
+		$result = $mysqli->query($query);
+		
+		$query = "UPDATE ".$db_prefix."config SET config_value='".$log."' WHERE config_name LIKE 'log_activity'";
 		$result = $mysqli->query($query);
 
 
@@ -385,26 +401,37 @@
 		
 		// Get POST data
 		$deviceID = clean($_POST['deviceID']);
+		$trigger_type = clean($_POST['trigger_type']);
+		$trigger_state = clean($_POST['trigger_state']);
+	    $device = $_POST['action_device'];
+	    $device_set_state = $_POST['action_device_set_state'];
+		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
-                $push_message = clean($_POST['push_message']);
+		$push_message = clean($_POST['push_message']);
                 
-                if (empty($sendTo_mail)) $sendTo_mail = 0;
-                if (empty($mail_secondary)) $mail_secondary = " ";
-                if (empty($push_message)) $push_message = " ";
+		if (empty($sendTo_mail)) $sendTo_mail = 0;
+		if (empty($mail_secondary)) $mail_secondary = " ";
+		if (empty($push_message)) $push_message = " ";
 
 
 		// Insert telldus config
 		$query = "INSERT INTO ".$db_prefix."schedule_device SET 
 					user_id='".$user['user_id']."', 
-					device_id='".$deviceID."',  
+					device_id='".$deviceID."',
+					device_state=0,
+					trigger_type='".$trigger_type."',  
+					trigger_state='".$trigger_state."',  
+					action_device='".$device."', 
+					action_device_set_state='".$device_set_state."', 
+					repeat_alert='".$repeat."', 
 					send_to_mail='". $sendTo_mail ."',
 					send_push='". $send_push ."',
 					notification_mail_primary='". $mail_primary ."',
 					notification_mail_secondary='". $mail_secondary ."',
-                                        push_message='". $push_message ."'";
+					push_message='". $push_message ."'";
 		$result = $mysqli->query($query);
 		
 
@@ -461,21 +488,32 @@
 		
 		// Get POST data
 		$deviceID = clean($_POST['deviceID']);
+		$trigger_type = clean($_POST['trigger_type']);
+		$trigger_state = clean($_POST['trigger_state']);
+	    $device = $_POST['action_device'];
+	    $device_set_state = $_POST['action_device_set_state'];
+		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
-                $push_message = clean($_POST['push_message']);
-                
-                if (empty($sendTo_mail)) $sendTo_mail = 0;
-                if (empty($mail_secondary)) $mail_secondary = " ";
-                if (empty($push_message)) $push_message = " ";
+        $push_message = clean($_POST['push_message']);
+		
+		
+		if (empty($sendTo_mail)) $sendTo_mail = 0;
+		if (empty($mail_secondary)) $mail_secondary = " ";
+		if (empty($push_message)) $push_message = " ";
 
 
 		// Update userdata
 		$query = "UPDATE ".$db_prefix."schedule_device SET 
 					user_id='".$user['user_id']."', 
 					device_id='".$deviceID."',  
+					trigger_type='".$trigger_type."',  
+					trigger_state='".$trigger_state."',  
+					action_device='".$device."', 
+					action_device_set_state='".$device_set_state."', 
+					repeat_alert='".$repeat."', 
 					send_to_mail='". $sendTo_mail ."',
 					send_push='". $send_push ."',
 					notification_mail_primary='". $mail_primary ."',

@@ -75,6 +75,24 @@
 				echo "</div>";
 			echo "</div>";
 			
+			echo "<div class='control-group'>";
+				echo "<label class='control-label' for='navbar_layout'>".$lang['PageLayout']."</label>";
+				echo "<div class='controls'>";
+					echo "<label class='navbar_layout'>";				
+						echo "<select name='navbar_layout'>";
+							if ($config['navbar_layout'] == "grey") {
+								echo "<option value='grey' selected='selected'>grey</option>";
+								echo "<option value='blue'>blue</option>";
+							} else {
+								echo "<option value='grey'>grey</option>";
+								echo "<option value='blue' selected='selected'>blue</option>";								
+							}
+			      	  	echo "</select>";
+			        echo "</label>";
+
+				echo "</div>";
+			echo "</div>";
+			
 				echo "<div class='control-group'>";
 					echo "<div class='controls'>";
 

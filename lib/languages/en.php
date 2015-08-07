@@ -8,6 +8,26 @@
 	
 $lang = array(
 	
+	"TriggerState_ChangeState" => "Change value to",
+	"TriggerState_HasState" => "Has value",
+	"DeviceTurnedOn" => "was turned on",
+	"DeviceIsOn" => "is on",
+	"DeviceIsOff" => "is off",
+	
+	"Current" => "Current",
+	"Last12h" => "Last 12 hours",
+	"Last24h" => "Last 24 hours",
+	"Today" => "Today",
+	"ThisWeek" => "This week",
+	"LastWeek" => "Previous week",
+	"ThisMonth" => "This week",
+	"LastMonth" => "Previous month",
+	"Last6Months" => "Last 6 months",
+	"LastYear" => "Last year",
+	"AllTime" => "All time",
+	"Custom" => "Custom",
+	"Display" => "Display",
+	
 	// Navigation
 	"Home" => "Home",
 	"Sensors" => "Sensors",

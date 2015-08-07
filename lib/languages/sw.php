@@ -7,6 +7,27 @@
 	*/
 	
 $lang = array(
+
+	"TriggerState_ChangeState" => "byter till",
+	"TriggerState_HasState" => "har värdet",
+	"DeviceTurnedOn" => "har satts på",
+	"DeviceTurnedOff" => "har stängts av",
+	"DeviceIsOn" => "är på",
+	"DeviceIsOff" => "är av",
+
+	"Current" => "Just nu",
+	"Last12h" => "Senaste 12 timmarna",
+	"Last24h" => "Senaste 24 timmarna",
+	"Today" => "Idag",
+	"ThisWeek" => "Förra veckan",
+	"LastWeek" => "Denna veckan",
+	"ThisMonth" => "Denna månaden",
+	"LastMonth" => "Förra månaden",
+	"Last6Months" => "Senaste halvåret",
+	"LastYear" => "I år",
+	"AllTime" => "Alltid",
+	"Custom" => "Ange själv",
+	"Display" => "Visa",
 	
 	// Navigation
 	"Home" => "Hem",

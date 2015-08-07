@@ -56,6 +56,12 @@
 	    $row = $result->fetch_array();
 
 	    $deviceID = $row['device_id'];
+		$trigger_type = $row['trigger_type'];
+		$trigger_state = $row['trigger_state'];
+	    $device = $row['action_device'];
+	    $device_set_state = $row['action_device_set_state'];
+		
+	    $repeat_alert = $row['repeat_alert'];
 	    $send_to_mail = $row['send_to_mail'];
 	    $send_push = $row['send_push'];
 	    $mail_primary = $row['notification_mail_primary'];
@@ -64,6 +70,8 @@
 
 	} else {
 		$send_to_mail = 1;
+		$trigger_state = 1;
+		$repeat_alert = 30;
 		$send_push = 0;
 		$mail_primary = $user['mail'];
 		$mail_secondary = "";
@@ -87,6 +95,8 @@
 
 	/* Form
 	--------------------------------------------------------------------------- */
+	
+	//Add or Edit Sensor
 	if ($action == "addsensor" || $action == "editsensor") {
 
 		if ($action == "editsensor") {
@@ -271,6 +281,7 @@
 		echo "</form>";
 		echo "</div>";
 	}
+		// Add or Edit device
 		if ($action == "adddevice" || $action == "editdevice") {
 
 		if ($action == "editdevice") {
@@ -300,6 +311,38 @@
 		   						echo "<option value='{$row['device_id']}'>{$row['device_id']}: {$row['name']}</option>";
 		   				}
 		   				echo "</select>";
+
+						echo "<select style='width:135px; margin-left:10px;' name='trigger_type'>";
+						if ($trigger_type == 1) {
+		   					echo "<option value='1' selected='selected'>{$lang['TriggerState_ChangeState']}</option>";
+		   					echo "<option value='2'>{$lang['TriggerState_HasState']}</option>";
+						}
+						elseif ($trigger_type == 2) {
+		   					echo "<option value='1'>{$lang['TriggerState_ChangeState']}</option>";
+		   					echo "<option value='2' selected='selected'>{$lang['TriggerState_HasState']}</option>";
+						}
+						else {
+		   					echo "<option value='1' selected='selected'>{$lang['TriggerState_ChangeState']}</option>";
+		   					echo "<option value='2'>{$lang['TriggerState_HasState']}</option>";							
+						}
+		   				echo "</select>";
+						
+						
+						echo "<select style='width:70px; margin-left:10px;' name='trigger_state'>";
+						if ($trigger_state == 1) {
+		   					echo "<option value='1' selected='selected'>{$lang['On']}</option>";
+		   					echo "<option value='2'>{$lang['Off']}</option>";
+						}
+						elseif ($trigger_state == 2) {
+		   					echo "<option value='1'>{$lang['On']}</option>";
+		   					echo "<option value='2' selected='selected'>{$lang['Off']}</option>";
+						}
+						else {
+		   					echo "<option value='1' selected='selected'>{$lang['On']}</option>";
+		   					echo "<option value='2'>{$lang['Off']}</option>";							
+						}
+		   				echo "</select>";
+						
 					echo "</td>";
 				echo "</tr>";
 
@@ -307,7 +350,49 @@
 				echo "<tr><td colspan='2'><br /></td></tr>"; // Space
 
 
+				// Device action
+				
+				echo "<tr><td colspan='2'><h5>{$lang['Device action']}</h5></td></tr>"; // Headline
 
+				echo "<tr>";
+					echo "<td>{$lang['Devices']}</td>";
+					echo "<td>";
+						$query = "SELECT * FROM ".$db_prefix."devices WHERE user_id='".$user['user_id']."' ORDER BY name ASC LIMIT 100";
+		   				$result = $mysqli->query($query);
+
+		   				echo "<select style='width:250px;' name='action_device'>";
+		   					echo "<option value='0'>-- {$lang['No device action']} --</option>";
+
+			   				while ($row = $result->fetch_array()) {
+			   					if ($device == $row['device_id'])
+			   						echo "<option value='{$row['device_id']}' selected='selected'>{$row['device_id']}: {$row['name']}</option>";
+
+			   					else
+			   						echo "<option value='{$row['device_id']}'>{$row['device_id']}: {$row['name']}</option>";
+			   				}
+		   				echo "</select>";
+
+
+		   				echo "<select style='width:70px; margin-left:10px;' name='action_device_set_state'>";
+						if ($device_set_state == 1) {
+		   					echo "<option value='1' selected='selected'>{$lang['On']}</option>";
+		   					echo "<option value='0'>{$lang['Off']}</option>";
+						}
+						elseif ($device_set_state == 0) {
+		   					echo "<option value='1'>{$lang['On']}</option>";
+		   					echo "<option value='0' selected='selected'>{$lang['Off']}</option>";
+						}
+						else {
+		   					echo "<option value='1'>{$lang['On']}</option>";
+		   					echo "<option value='0'>{$lang['Off']}</option>";							
+						}
+		   				echo "</select>";
+
+					echo "</td>";
+				echo "</tr>";
+
+
+				echo "<tr><td colspan='2'><br /></td></tr>"; // Space
 
 				echo "<tr><td colspan='2'><h5>{$lang['Notifications']}</h5></td></tr>"; // Headline
 
@@ -329,6 +414,14 @@
 					echo "</td>";
 				echo "</tr>";
 				
+				// Value
+				echo "<tr>";
+					echo "<td>{$lang['Repeat every']}</td>";
+					echo "<td>";
+						echo "<input style='width:35px;' type='text' name='repeat' id='repeat' value='$repeat_alert' /> {$lang['minutes']}";
+					echo "</td>";
+				echo "</tr>";
+
 				// Push Message
 				if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
 					echo "<tr>";
@@ -523,6 +616,7 @@
 				echo "<tr>";
 					//echo "<th>".$lang['Name']."</th>";
 					echo "<th>".$lang['Rule']."</th>";
+					echo "<th>".$lang['Action']."</th>";
 					echo "<th>".$lang['Email']."</th>";
 					if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app']))
 					echo "<th>".$lang['Push notifications']."</th>";
@@ -539,11 +633,27 @@
 
 		    			echo "<td>";
 
-		    				// Sensorname
-		    				echo "#{$row['device_id']}: {$row['name']}<br />";
+		    				// Rule
+		    				echo "#{$row['device_id']}: {$row['name']}<br/>";
+							if ($row['trigger_type'] == 1) 
+								echo "{$lang['TriggerState_ChangeState']} ";
+							else
+								echo "{$lang['TriggerState_HasState']} ";
+							
+							if ($row['trigger_state'] == 1) 
+								echo "<b>".$lang['On']."</b>";
+							else
+								echo "<b>".$lang['Off']."</b>";
+							
+						echo "</td>";
 
+						echo "<td style='text-align:left;'>";
 
-		    				// Rule description
+		    				// Action
+		    				if ($row['action_device'] >0 ) echo "<img id='imgDisp{$row['notification_id']}' style='height:16px;' src='images/metro_black/check.png' alt='yes' class='klicka' row-action='0' row-id='{$row['notification_id']}' />";
+		    				else echo "<img id='imgDisp{$row['notification_id']}' style='height:16px;' src='images/metro_black/cancel.png' alt='no' class='klicka' row-action='1' row-id='{$row['notification_id']}' />";
+		    			echo "</td>";
+						
 
 
 		    			// Send to mail

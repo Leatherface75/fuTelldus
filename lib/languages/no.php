@@ -8,6 +8,27 @@
 	
 $lang = array(
 	
+	"TriggerState_ChangeState" => "endringer til",
+	"TriggerState_HasState" => "har verdien",
+	"DeviceTurnedOn" => "har blitt slått på",
+	"DeviceTurnedOff" => "er dempet",
+	"DeviceIsOn" => "er på",
+	"DeviceIsOff" => "er av",
+
+	"Current" => "Nå",
+	"Last12h" => "Siste 12 timer",
+	"Last24h" => "Siste 24 timer",
+	"Today" => "I dag",
+	"ThisWeek" => "Forrige uke",
+	"LastWeek" => "Denne uka",
+	"ThisMonth" => "Denna måneden",
+	"LastMonth" => "Forrige måned",
+	"Last6Months" => "Siste 6 måneder",
+	"LastYear" => "I år",
+	"AllTime" => "Alltid",
+	"Custom" => "Satt seg",
+	"Display" => "Vis",
+	
 	// Navigation
 	"Home" => "Hjem",
 	"Sensors" => "Sensorer",
