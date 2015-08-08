@@ -307,6 +307,8 @@
 
     if ($numRows2 > 0) {
     	while($row4 = $result6->fetch_array()) {
+				    	/* Check for warning last sent
+			--------------------------------------------------------------------------- */
 			if ($row4['send_to_mail'] == 1 || $row4['send_push'] == 1 || $row4['action_device'] > 0 ) {
 			
 				/* Connect to telldus
@@ -346,9 +348,28 @@
 					}
 				}
 
+				echo "<br><br>Device name: " . $row4['name'];
+				
 				if ($take_action) {
 					
-					if ($row4['send_to_mail'] == 1) {
+					// Check for warning last sent
+					$timeSinceLastWarning = (time() - $row4['last_warning']);
+
+					// Check if notification-repeat-state
+					if (($row4['repeat_alert'] * 60) < $timeSinceLastWarning) 
+						$repeatDeviceNotification = true;
+					else 
+						$repeatDeviceNotification = false;
+					
+					echo "<br>Action taken!";
+
+					
+					// Send mail
+					if ($row4['send_to_mail'] == 1 && $repeatDeviceNotification == true) {
+						$queryTimestamp = "UPDATE ".$db_prefix."schedule_device SET last_warning='".time()."' WHERE notification_id='".$row4['notification_id']."'";
+						$resultTimestamp = $mysqli->query($queryTimestamp);			
+
+					
 						$mailMessage = "{$lang['Warning']} {$lang['Schedule']}.";
 
 						// Use mail-function in /lib/php_functions/global.functions.inc.php
@@ -375,6 +396,8 @@
 							$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/turnOn', $params, 'GET');
 					}
 						
+				} else {
+					echo "<br>No action this time!";
 				} //if (take_action)
 			} //end-if
 			
@@ -385,5 +408,8 @@
 
 		} //end-while
     } //end-numRows
+	
+	echo "<br><br>Schedule script completed";
+
     
 ?>

@@ -19,8 +19,21 @@
 			Please also mark where your changes start with a date for change and if possible version of futelldus
 			
 		*/
-		
-// -- CHANGES by androidemil 2015-07-25 Start --
+// -- CHANGES by androidemil 2015-08-07 Start --
+		//Add column device in table schedule_device if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule_device LIKE 'last_warning'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'schedule_device ADD last_warning int(11) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add last_warning column: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'schedule_device SET last_warning = 0';
+			$result = $mysqli->query($query);	
+		}
+
+
+// -- CHANGES by androidemil 2015-08-07 Start --
 
 		//Add navbar layout configuration in config table
 		$result = $mysqli->query("SELECT * FROM ".$db_prefix."config");
