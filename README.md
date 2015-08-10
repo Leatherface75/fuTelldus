@@ -15,18 +15,17 @@ Synology user instructions for full installation:
   A full installation description is created in xxxxx.txt
 	Big part of it could be used for installations on other servers as well.
 
-
 News in this fork (androidemil):
 ----------------------------------
-2015-08-06
-1. More advanced schemas/event handling for devices (
+2015, August 9
+
+1. More advanced schemas/event handling for devices
 2. Sensor statistics (min, avg, max) for many different periods (12hours, 24hours, today, this/last month, this/last year, custom)
 3. Click on sensor in first page to get sensor statistics and information
 4. Possible to select to use CSOMs blue or DICOs grey layout.
 5. Added favicon 
 6. Added shell scripts for setting up cron jobs on synology through synology control panel
 7. Added synology installation instructions
-
 
 
 News in CSOMs fork used as a base for this fork.
