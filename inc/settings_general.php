@@ -76,7 +76,38 @@
 			echo "</div>";
 			
 			echo "<div class='control-group'>";
-				echo "<label class='control-label' for='navbar_layout'>".$lang['PageLayout']."</label>";
+				echo "<span title='". $lang['DefaultLanguageDesc']."'>";
+				echo "<label class='control-label' for='language'>{$lang['DefaultLanguage']}</label></span>";
+				echo "<div class='controls'>";
+
+					echo "<label class='defaultlanguage'>";
+		
+						$sourcePath = utf8_decode($sourcePath); // Encode for æøå-characters
+						$handler = opendir($sourcePath);
+						
+						echo "<select name='defaultlanguage'>";
+							while ($file = readdir($handler)) {
+								$file = utf8_encode($file); // Encode for æøå-characters
+								
+								list($filename, $ext) = explode(".", $file);
+
+								if ($ext == "php") {
+									if ($config['default_language'] == $filename)
+										echo "<option value='$filename' selected='selected'>$filename</option>";
+
+									else
+										echo "<option value='$filename'>$filename</option>";
+								}
+							}
+			      	  	echo "</select>";
+			        echo "</label>";
+
+				echo "</div>";
+			echo "</div>";
+			
+			echo "<div class='control-group'>";
+				echo "<span title='". $lang['PageLayoutDesc']."'>";
+				echo "<label class='control-label' for='navbar_layout'>".$lang['PageLayout']."</label></span>";
 				echo "<div class='controls'>";
 					echo "<label class='navbar_layout'>";				
 						echo "<select name='navbar_layout'>";

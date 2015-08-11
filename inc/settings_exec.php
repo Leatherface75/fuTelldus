@@ -225,6 +225,7 @@
 		$mail_from = clean($_POST['mail_from']);
 		$chart_max_days = clean($_POST['chart_max_days']);
 		$language = clean($_POST['language']);
+		$defaultlanguage = clean($_POST['defaultlanguage']);
 		$log = clean($_POST['log']);
 		$navbar_layout = clean($_POST['navbar_layout']);		
 
@@ -240,7 +241,11 @@
 
 		$query = "UPDATE ".$db_prefix."config SET config_value='".$language."' WHERE config_name LIKE 'public_page_language'";
 		$result = $mysqli->query($query);
-                
+  
+
+		$query = "UPDATE ".$db_prefix."config SET config_value='".$defaultlanguage."' WHERE config_name LIKE 'default_language'";
+		$result = $mysqli->query($query);
+		
 		if (isset($config['navbar_layout'])) {
 			$query = "UPDATE ".$db_prefix."config SET config_value='".$navbar_layout."' WHERE config_name LIKE 'navbar_layout'";			
 		} else {
@@ -365,15 +370,16 @@
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
+		$notific_type = clean($_POST['notifictype']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
 
 		$deviceID = clean($_POST['deviceID']);
 		$device_action = clean($_POST['device_action']);
                 
-                if (empty($sendTo_mail)) $sendTo_mail = 0;
-                if (empty($mail_secondary)) $mail_secondary = " ";
-
+		if (empty($sendTo_mail)) $sendTo_mail = 0;
+		if (empty($mail_secondary)) $mail_secondary = " ";
+		if (empty($notific_type)) $notific_type = 2;
 
 		// Insert telldus config
 		$query = "INSERT INTO ".$db_prefix."schedule SET 
@@ -387,6 +393,7 @@
 					device_set_state='".$device_action."', 
 					send_to_mail='". $sendTo_mail ."',
 					send_push='". $send_push ."',
+					notification_type='". $notific_type . "',
 					notification_mail_primary='". $mail_primary ."',
 					notification_mail_secondary='". $mail_secondary ."'";
 		$result = $mysqli->query($query);
@@ -408,6 +415,7 @@
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
+		$notific_type = clean($_POST['notifictype']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
 		$push_message = clean($_POST['push_message']);
@@ -415,7 +423,7 @@
 		if (empty($sendTo_mail)) $sendTo_mail = 0;
 		if (empty($mail_secondary)) $mail_secondary = " ";
 		if (empty($push_message)) $push_message = " ";
-
+		if (empty($notific_type)) $notific_type = 2;
 
 		// Insert telldus config
 		$query = "INSERT INTO ".$db_prefix."schedule_device SET 
@@ -429,6 +437,7 @@
 					repeat_alert='".$repeat."', 
 					send_to_mail='". $sendTo_mail ."',
 					send_push='". $send_push ."',
+					notification_type='". $notific_type . "',
 					notification_mail_primary='". $mail_primary ."',
 					notification_mail_secondary='". $mail_secondary ."',
 					push_message='". $push_message ."'";
@@ -454,15 +463,17 @@
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
+		$notific_type = clean($_POST['notifictype']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
 
 		$deviceID = clean($_POST['deviceID']);
 		$device_action = clean($_POST['device_action']);
 
-                if (empty($sendTo_mail)) $sendTo_mail = 0;
-                if (empty($mail_secondary)) $mail_secondary = " ";
-
+		if (empty($sendTo_mail)) $sendTo_mail = 0;
+		if (empty($mail_secondary)) $mail_secondary = " ";
+		if (empty($notific_type)) $notific_type = 2;
+		
 		// Update userdata
 		$query = "UPDATE ".$db_prefix."schedule SET 
 					sensor_id='".$sensorID."', 
@@ -474,6 +485,7 @@
 					device_set_state='".$device_action."', 
 					send_to_mail='".$sendTo_mail."',
 					send_push='". $send_push ."',
+					notification_type='". $notific_type . "',
 					notification_mail_primary='".$mail_primary."', 
 					notification_mail_secondary='".$mail_secondary."' 
 					WHERE notification_id='".$getID."'";
@@ -495,6 +507,7 @@
 		$repeat = clean($_POST['repeat']);
 		$sendTo_mail = clean($_POST['sendTo_mail']);
 		$send_push = clean($_POST['send_push']);
+		$notific_type = clean($_POST['notifictype']);
 		$mail_primary = clean($_POST['mail_primary']);
 		$mail_secondary = clean($_POST['mail_secondary']);
         $push_message = clean($_POST['push_message']);
@@ -503,7 +516,7 @@
 		if (empty($sendTo_mail)) $sendTo_mail = 0;
 		if (empty($mail_secondary)) $mail_secondary = " ";
 		if (empty($push_message)) $push_message = " ";
-
+		if (empty($notific_type)) $notific_type = 2;
 
 		// Update userdata
 		$query = "UPDATE ".$db_prefix."schedule_device SET 
@@ -516,6 +529,7 @@
 					repeat_alert='".$repeat."', 
 					send_to_mail='". $sendTo_mail ."',
 					send_push='". $send_push ."',
+					notification_type='". $notific_type . "',
 					notification_mail_primary='". $mail_primary ."',
 					notification_mail_secondary='". $mail_secondary ."',
                                         push_message='". $push_message ."'

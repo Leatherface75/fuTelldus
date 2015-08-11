@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `futelldus_schedule` (
   `send_to_mail` tinyint(4) NOT NULL,
   `send_push` tinyint(4) NOT NULL,
   `last_warning` int(11) NOT NULL,
+  `notification_type` smallint(6) NOT NULL,  
   `notification_mail_primary` varchar(256) NOT NULL,
   `notification_mail_secondary` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -107,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `futelldus_schedule_device` (
   `send_to_mail` tinyint(4) NOT NULL,
   `send_push` tinyint(4) NOT NULL,
   `last_warning` int(11) NOT NULL,
+  `notification_type` smallint(6) NOT NULL,  
   `notification_mail_primary` varchar(256) NOT NULL,
   `notification_mail_secondary` varchar(256) NOT NULL,
   `push_message` varchar(256) NOT NULL

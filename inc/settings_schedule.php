@@ -39,6 +39,7 @@
 	    $device_set_state = $row['device_set_state'];
 	    $send_to_mail_sensor = $row['send_to_mail'];
 	    $send_push_sensor = $row['send_push'];
+		$notific_type = $row['notification_type'];
 	    $mail_primary_sensor = $row['notification_mail_primary'];
 	    $mail_secondary_sensor = $row['notification_mail_secondary'];
 
@@ -61,9 +62,10 @@
 	    $device = $row['action_device'];
 	    $device_set_state = $row['action_device_set_state'];
 		
-	    $repeat_alert = $row['repeat_alert'];
+	    $repeat_alert_device = $row['repeat_alert'];
 	    $send_to_mail = $row['send_to_mail'];
 	    $send_push = $row['send_push'];
+		$notific_type = $row['notification_type'];
 	    $mail_primary = $row['notification_mail_primary'];
 	    $mail_secondary = $row['notification_mail_secondary'];
 	    $push_message = $row['push_message'];
@@ -71,7 +73,7 @@
 	} else {
 		$send_to_mail = 1;
 		$trigger_state = 1;
-		$repeat_alert = 30;
+		$repeat_alert_device = 30;
 		$send_push = 0;
 		$mail_primary = $user['mail'];
 		$mail_secondary = "";
@@ -248,6 +250,27 @@
 					echo "</td>";
 				echo "</tr>";
 
+				// Notification Type
+				echo "<tr>";
+					echo "<td>{$lang['NotificationType']}: ".$notific_type."</td>";
+					echo "<td>";
+						echo "<select style='width:140px; margin-left:0px;' name='notifictype'>";
+						if ($notific_type == 1) {
+							echo "<option value='1' selected='selected'>{$lang['Info']}</option>";
+							echo "<option value='2'>{$lang['Warning']}</option>";
+						}
+						elseif ($notific_type == 2) {
+							echo "<option value='1'>{$lang['Info']}</option>";
+							echo "<option value='2' selected='selected'>{$lang['Warning']}</option>";
+						}
+						else {
+							echo "<option value='1'>{$lang['Info']}</option>";
+							echo "<option value='2'>{$lang['Warning']}</option>";							
+						}
+						echo "</select>";
+					echo "</td>";
+				echo "</tr>";
+				
 
 				// Primary mail
 				echo "<tr>";
@@ -418,10 +441,34 @@
 				echo "<tr>";
 					echo "<td>{$lang['Repeat every']}</td>";
 					echo "<td>";
-						echo "<input style='width:35px;' type='text' name='repeat' id='repeat' value='$repeat_alert' /> {$lang['minutes']}";
+						echo "<input style='width:35px;' type='text' name='repeat' id='repeat' value='$repeat_alert_device' /> {$lang['minutes']}";
 					echo "</td>";
 				echo "</tr>";
 
+				
+					
+				// Notification Type
+				echo "<tr>";
+					echo "<td>{$lang['NotificationType']}</td>";
+					echo "<td>";
+						echo "<select style='width:140px; margin-left:0px;' name='notifictype'>";
+						if ($notific_type == 1) {
+							echo "<option value='1' selected='selected'>{$lang['Info']}</option>";
+							echo "<option value='2'>{$lang['Warning']}</option>";
+						}
+						elseif ($notific_type == 2) {
+							echo "<option value='1'>{$lang['Info']}</option>";
+							echo "<option value='2' selected='selected'>{$lang['Warning']}</option>";
+						}
+						else {
+							echo "<option value='1'>{$lang['Info']}</option>";
+							echo "<option value='2'>{$lang['Warning']}</option>";							
+						}
+						echo "</select>";
+					echo "</td>";
+				echo "</tr>";
+				
+				
 				// Push Message
 				if (!empty($userTelldusConf['push_user']) && !empty($userTelldusConf['push_app'])) {
 					echo "<tr>";

@@ -84,8 +84,11 @@
 			if (($row['repeat_alert'] * 60) < $timeSinceLastWarning) $repeatNotification = true;
 			else $repeatNotification = false;
 
-
-
+			// Define notification type text
+			if ($row['notification_type'] == 1)
+				$notifyType = $lang['Info'];
+			else 
+				$notifyType = $lang['Warning'];
 
 
 			/* Check for device action
@@ -135,7 +138,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['Low']} {$lang['Temperature']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['Low']} {$lang['Temperature']}";
 				    		$mailMessage = "{$lang['Notification mail low temperature']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -168,7 +171,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['Low']} {$lang['Humidity']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['Low']} {$lang['Humidity']}";
 				    		$mailMessage = "{$lang['Notification mail low humidity']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -206,7 +209,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['High']} {$lang['Temperature']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['High']} {$lang['Temperature']}";
 				    		$mailMessage = "{$lang['Notification mail high temperature']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -238,7 +241,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['High']} {$lang['Humidity']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['High']} {$lang['Humidity']}";
 				    		$mailMessage = "{$lang['Notification mail high humidity']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -325,26 +328,31 @@
 
 				$xmlString = $response->getBody();
 				$xmldata = new SimpleXMLElement($xmlString);
-
+				
+				if ($row4['notification_type'] == 1)
+					$notifyType = $lang['Info'];
+				else 
+					$notifyType = $lang['Warning'];
+						
 				if (($row4['trigger_type'] == 1) && ($row4['trigger_state'] == 1)) {  //If trigger is 'Device change state to On'
 					if (($xmldata->state == 1) && ($row4['device_state'] == 2)) { 	// current state is On, last state was Off
 						$take_action = true;
-						$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['name']} {$lang['DeviceTurnedOn']}";
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOn']}";
 					}
 				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 1)) {  //If trigger is 'Device has state On'
 					if ($xmldata->state == 1) { 	// current state is On
 						$take_action = true;
-						$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['name']} {$lang['DeviceIsOn']}";
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOn']}";
 					}		
 				} else if (($row4['trigger_type'] == 1) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device change to state Off'
 					if (($xmldata->state == 2) && ($row4['device_state'] == 1)) { 	// current state is Off, last state was On
 						$take_action = true;
-						$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['name']} {$lang['DeviceTurnedOff']}";
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOff']}";
 					}		
 				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device has state Off'
 					if ($xmldata->state == 2) { 	// current state is Off
 						$take_action = true;
-						$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['name']} {$lang['DeviceIsOff']}";
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOff']}";
 					}
 				}
 
@@ -369,9 +377,8 @@
 						$queryTimestamp = "UPDATE ".$db_prefix."schedule_device SET last_warning='".time()."' WHERE notification_id='".$row4['notification_id']."'";
 						$resultTimestamp = $mysqli->query($queryTimestamp);			
 
-					
-						$mailMessage = "{$lang['Warning']} {$lang['Schedule']}.";
-
+						$mailMessage = "{$notifyType}: {$lang['Schedule']}.";
+							
 						// Use mail-function in /lib/php_functions/global.functions.inc.php
 						if (!empty($row4['notification_mail_primary'])) sendMail($row4['notification_mail_primary'], $mailSubject, $mailMessage);
 						if (!empty($row4['notification_mail_secondary'])) sendMail($row4['notification_mail_secondary'], $mailSubject, $mailMessage);
@@ -383,7 +390,7 @@
 						//$mess = "({$row4['name']}){$row4['device_id']}";
 
 						//$pushMessage = str_replace("%%device%%", $mess, $pushMessage);
-						$pushTitle = "{$config['pagetitle']}: {$lang['Warning']} {$lang['Schedule']}.";
+						$pushTitle = "{$config['pagetitle']}: {$notifyType} {$lang['Schedule']}.";
 						// Use PushOver curl
 						sendPush("{$telldusConf['push_app']}", "{$telldusConf['push_user']}", "{$pushTitle}", "{$pushMessage}");
 					}	

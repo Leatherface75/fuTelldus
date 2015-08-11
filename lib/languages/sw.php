@@ -28,7 +28,11 @@ $lang = array(
 	"AllTime" => "Alltid",
 	"Custom" => "Ange själv",
 	"Display" => "Visa",
-	
+	"PageLayout" => "Utseende",
+	"PageLayoutDesc" => "Välj vilket utseende du vill ha på fuTelldus siten",
+	"DefaultLanguage" => "Basspråk",
+	"DefaultLanguageDesc" => "Används som backup, t.ex vid epost notifieringar eftersom det inte finns någon användare inloggad då.",	
+		
 	// Navigation
 	"Home" => "Hem",
 	"Sensors" => "Sensorer",
@@ -224,13 +228,15 @@ $lang = array(
 	"Value" => "Värde",
 	"Cancel" => "Avbryt",
 	"Warning" => "Varning",
+	"Info" => "Info",
 	"High" => "Hög",
 	"Low" => "Låg",
 	"Primary" => "Primär",
 	"Secondary" => "Sekundär",
 	"Now" => "Nu",
 	"Action" => "Action",
-
+	"NotificationType" => "Typ av notifiering",	
+	
 		// send warning IF temperature IS more/less THAN   / FOR sensor ...
 		"If" => "om",
 		"Is" => "är",

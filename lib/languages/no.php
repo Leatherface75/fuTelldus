@@ -28,7 +28,12 @@ $lang = array(
 	"AllTime" => "Alltid",
 	"Custom" => "Satt seg",
 	"Display" => "Vis",
-	
+	"PageLayout" => "Page layout",
+	"PageLayoutDesc" => "Defines what base layout you want on this fuTelldus site",
+	"DefaultLanguage" => "Standardspråk",
+	"DefaultLanguageDesc" => "Used as backup, e.g. used for email notificaions since there is no user logged in",	
+	"NotificationType" => "Notification type",	
+		
 	// Navigation
 	"Home" => "Hjem",
 	"Sensors" => "Sensorer",
@@ -223,6 +228,7 @@ $lang = array(
 	"Value" => "Verdi",
 	"Cancel" => "Avbryt",
 	"Warning" => "Advarsel",
+	"Info" => "Info",
 	"High" => "High",
 	"Low" => "Low",
 	"Primary" => "Primær",

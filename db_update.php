@@ -19,8 +19,36 @@
 			Please also mark where your changes start with a date for change and if possible version of futelldus
 			
 		*/
+
+		 
+// -- CHANGES by androidemil 2015-08-11 Start --
+		//Add column notification_type in table schedule_device if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule_device LIKE 'notification_type'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'schedule_device ADD notification_type smallint(6) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add notification_type column in table futelldus_schedule_device: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'schedule_device SET notification_type = 2';
+			$result = $mysqli->query($query);	
+		}
+		
+		//Add column notification_type in table schedule if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule LIKE 'notification_type'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'schedule ADD notification_type smallint(6) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add notification_type column in table futelldus_schedule: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'schedule SET notification_type = 2';
+			$result = $mysqli->query($query);	
+		}
+		
+		  
 // -- CHANGES by androidemil 2015-08-07 Start --
-		//Add column device in table schedule_device if it doesn't exist already
+		//Add column last_warning in table schedule_device if it doesn't exist already
 		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule_device LIKE 'last_warning'");
 		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
 		if($exists == FALSE)
