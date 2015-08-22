@@ -1,9 +1,47 @@
+<script>
+   $(document).ready(function(){
+      $('#title').click(function(){
+         $('#tags_check').toggle();
+      });
+   })
+</script>
+
+
+<style type="text/css">
+   #content {
+      position: relative;
+      padding: 10px;
+   }
+
+
+   #title {
+    color: #fff;
+    font-weight: bold;
+    background-color: #538fbe;
+    padding: 3px 3px;
+    font-size: 12px;
+    border: 1px solid #2d6898;
+    top: -5px;
+    left: 15px;
+    z-index: 2;
+    cursor: pointer;
+	}
+
+   #tags_check {
+      border: 1px dotted grey;
+      position: relative;
+      z-index: 0;
+      top: 3px;
+      padding: 5px;	
+   }
+</style>
+
 <?php
 	
 	echo "<h4>".$lang['Shared sensors']."</h4>";
 
 
-
+ 
 	/* Messages
 	--------------------------------------------------------------------------- */
 	if (isset($_GET['msg'])) {
@@ -23,11 +61,28 @@
 			echo "<table width='100%'>";
 
 				echo "<tr>";
+					echo "<td>".$lang['Source']."</td>";
+					echo "<td></td>";
+					echo "<td></td>";
+				echo "</tr>";
+
+				echo "<tr>";
+		   				echo "<td><select style='width:250px;' name='sensorSource'>";
+		   				echo "<option value='0'>fuTelldus</option>";
+		   				echo "<option value='2'>weather-display.com</option>";
+		   			//	echo "<option value='1'>JSON</option>";
+		   				echo "</select></td>";
+					echo "<td></td>";
+					echo "<td></td>";
+
+				echo "</tr>";
+
+				echo "<tr>";
 					echo "<td>".$lang['Description']."</td>";
 					echo "<td>".$lang['XML URL']."</td>";
 					echo "<td></td>";
 				echo "</tr>";
-
+		   				
 				echo "<tr>";
 
 					echo "<td>";
@@ -45,8 +100,21 @@
 		echo "</form>";
 
 	echo "</fieldset>";
+	echo "<div id='content'>";
+	echo "<div id='title'>Click for more info</div>";
+  echo "<div id='tags_check' >";
+   
+	//	echo "<fieldset style='border: 1px dotted;visibility: hidden' id='test' ><br>";
+	  	echo "<b>fuTelldus</b><br> Enter URL to the public sensor at any other fuTelldus site<br><br>";
+	    echo "<b>weather-display.com:</b><br> Enter the url of any site using the weather-display software. Click on link for list of several sites using this<br>";
+	    echo "<a href='http://www.weather-display.com/index3.php'>http://www.weather-display.com/index3.php</a><br>";
+			echo "If you have problem to get it work:<br> 1. Make sure the url starts with http<br>  2. try to add clientraw.txt after url an see if you get any response.<br><br>";
+	  
+//	echo "</fieldset>";
+	echo "</div>";
+	echo "</div>";
 
-
+	echo "<script>$('#tags_check').toggle();</script>";
 
 	/* Shared sensors
 	--------------------------------------------------------------------------- */
@@ -61,9 +129,67 @@
 
 
 	    	while($row = $result->fetch_array()) {
+				
+					$urlCount = $row['url_counter'];
+					$urlCount = $urlCount+1;
+					$sensorUrl = str_replace("{counter}", $urlCount, $row['url']);
+					$sensorUrl = str_replace("{rand}", mt_rand(), $sensorUrl);
+				
+				if ($row['sensor_type']==1) { // simple json (result is serialized and defined json tag is only expected to be exist once in the json)
+					
+					//Update url counter
+					$query = "UPDATE ".$db_prefix."sensors_shared SET 
+								url_counter=".$urlCount." 
+								WHERE share_id='".$row['share_id']."'";
+					$tmp_result = $mysqli->query($query);
+					
+					//Call shared sensor
+					$curl = curl_init($sensorUrl);
+					curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+					$json = curl_exec($curl);
+					curl_close($curl);
+					
+					$jsonArr = json_decode(utf8_encode($json), true);
+					$sensorName = "";
+					$sensorLoc = "";
+					$sensorTemp = $jsonArr['temp'];
+					$sensorHumidity = $jsonArr['hum'] . "%";
+					$sensorUpd = $jsonArr['date'];
+				} else if ($row['sensor_type']==2) {  //weather-display.com software
+					// list of sensors http://www.weather-display.com/index3.php (add clientraw.txt?{counter} to sensor url)
 
-		    	$xmlData = simplexml_load_file($row['url']);
+					//Update url counter
+					$query = "UPDATE ".$db_prefix."sensors_shared SET 
+								url_counter=".$urlCount." 
+								WHERE share_id='".$row['share_id']."'";
+					$tmp_result = $mysqli->query($query);
 
+					$curl = curl_init($sensorUrl);
+					curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+					$json = curl_exec($curl);
+					curl_close($curl);
+
+					$wdArr = explode(" ", utf8_encode($json));
+					$sensorName = ""; //$row['description'];
+		    	$sensorLoc = "";
+		    	$sensorWindLatest = $wdArr[84];
+		    	$sensorWindGustMaxToday = $wdArr[71];
+  	    	$sensorAvgWind10min = $wdArr[158];
+		    	$sensorRainToday = $wdArr[7];
+		    	$sensorTemp = $wdArr[4] . "&deg;";
+					$sensorHumidity = $wdArr[5] . "%";
+					$sensorDate = explode("/", $wdArr[74]); // '17/08/2015'
+					$unixTime = mktime($wdArr[29], $wdArr[30], $wdArr[31], $sensorDate[1], $sensorDate[0], $sensorDate[2]);
+					$sensorUpd = ago($unixTime); 
+					
+				} else { //From another fuTelldus site
+					$xmlData = simplexml_load_file($sensorUrl);
+					$sensorName = $xmlData->sensor->name;
+		    		$sensorLoc = $xmlData->sensor->location;
+		    		$sensorTemp = $xmlData->sensor->temp . "&deg;";
+					$sensorHumidity = $xmlData->sensor->humidity . "%";
+					$sensorUpd = ago($xmlData->sensor->lastUpdate);
+				}
 		    	echo "<div style='border-bottom:1px solid #eaeaea; margin-left:15px; padding:10px;'>";
 
 
@@ -106,25 +232,25 @@
 		    		echo "<div style='font-size:20px;'>".$row['description']."</div>";
 
 		    		echo "<div style='font-size:11px;'>";
-		    			echo "<b>{$lang['Sensorname']}:</b> ".$xmlData->sensor->name . "<br />";
-		    			echo "<b>{$lang['Location']}:</b> ".$xmlData->sensor->location . "<br />";
+		    			echo "<b>{$lang['Sensorname']}:</b> ".$sensorName . "<br />";
+		    			echo "<b>{$lang['Location']}:</b> ".$sensorLoc . "<br />";
 		    			echo "<b>{$lang['XML URL']}:</b> <a href='{$row['url']}' target='_blank'>".$row['url']."</a>";
 		    		echo "</div>";
 		    		
 		    		echo "<div style='display:inline-block; width:100px; margin:10px; font-size:20px;'>";
 		    			echo "<img style='margin-right:10px;' src='images/therm.png' alt='icon' />";
-		    			echo $xmlData->sensor->temp . "&deg;";
+		    			echo $sensorTemp;
 		    		echo "</div>";
 
-		    		if ($xmlData->sensor->humidity > 0) {
+		    		if ($sensorHumidity > 0) {
 			    		echo "<div style='display:inline-block; width:100px; margin:10px; font-size:20px;'>";
 			    			echo "<img style='margin-right:10px;' src='images/water.png' alt='icon' />";
-			    			echo $xmlData->sensor->humidity . "%";
+			    			echo $sensorHumidity;
 			    		echo "</div>";
 			    	}
 
 		    		echo "<div style='font-size:10px'>";
-		    			echo ago($xmlData->sensor->lastUpdate);
+		    			echo $sensorUpd;
 		    		echo "</div>";
 
 		    	echo "</div>";

@@ -91,6 +91,8 @@
 				$notifyType = $lang['Warning'];
 
 
+			echo "<br><br>Sensor name: " . $row['name'];
+			
 			/* Check for device action
 			--------------------------------------------------------------------------- */
 
@@ -270,7 +272,7 @@
 		    /* IF warning = true
 			--------------------------------------------------------------------------- */
 		    if ($scheduleRun) {
-			
+				echo "<br><b>Action taken!</b>";
 		    	// Update sent timestamp
 			    $queryTimestamp = "UPDATE ".$db_prefix."schedule SET last_warning='".time()."' WHERE notification_id='".$row['notification_id']."'";
 				$resultTimestamp = $mysqli->query($queryTimestamp);
@@ -289,6 +291,8 @@
 					// Use PushOver curl
 					sendPush("{$telldusConf2['push_app']}", "{$telldusConf2['push_user']}", "{$mailSubject}", "{$pushMessage}");
 					}
+			} else {
+				echo "<br>No action taken this time!";
 			}
 				
 
@@ -325,7 +329,6 @@
 				$params = array('id'=> $row4['device_id'], 'supportedMethods'=> 3);
 				$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/info', $params, 'GET');
 
-
 				$xmlString = $response->getBody();
 				$xmldata = new SimpleXMLElement($xmlString);
 				
@@ -338,21 +341,25 @@
 					if (($xmldata->state == 1) && ($row4['device_state'] == 2)) { 	// current state is On, last state was Off
 						$take_action = true;
 						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOn']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasChangeValueTo']} {$lang['On']}!! ";
 					}
 				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 1)) {  //If trigger is 'Device has state On'
 					if ($xmldata->state == 1) { 	// current state is On
 						$take_action = true;
 						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOn']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasValue']} {$lang['On']}!! ";
 					}		
 				} else if (($row4['trigger_type'] == 1) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device change to state Off'
 					if (($xmldata->state == 2) && ($row4['device_state'] == 1)) { 	// current state is Off, last state was On
 						$take_action = true;
 						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOff']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasChangeValueTo']} {$lang['Off']}!! ";
 					}		
 				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device has state Off'
 					if ($xmldata->state == 2) { 	// current state is Off
 						$take_action = true;
 						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOff']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasValue']} {$lang['Off']}!! ";
 					}
 				}
 
@@ -368,8 +375,8 @@
 						$repeatDeviceNotification = true;
 					else 
 						$repeatDeviceNotification = false;
-					
-					echo "<br>Action taken!";
+
+					echo "<br><b>Action taken!</b>";
 
 					
 					// Send mail
@@ -377,7 +384,7 @@
 						$queryTimestamp = "UPDATE ".$db_prefix."schedule_device SET last_warning='".time()."' WHERE notification_id='".$row4['notification_id']."'";
 						$resultTimestamp = $mysqli->query($queryTimestamp);			
 
-						$mailMessage = "{$notifyType}: {$lang['Schedule']}.";
+						//$mailMessage = "{$notifyType}: {$lang['Schedule']}.";
 							
 						// Use mail-function in /lib/php_functions/global.functions.inc.php
 						if (!empty($row4['notification_mail_primary'])) sendMail($row4['notification_mail_primary'], $mailSubject, $mailMessage);

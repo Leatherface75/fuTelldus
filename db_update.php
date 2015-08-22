@@ -21,7 +21,7 @@
 		*/
 
 		 
-// -- CHANGES by androidemil 2015-08-11 Start --
+// -- CHANGES by androidemil 2015-08-12 Start --
 		//Add column notification_type in table schedule_device if it doesn't exist already
 		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule_device LIKE 'notification_type'");
 		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
@@ -33,7 +33,91 @@
 			$query = 'UPDATE '.$db_prefix.'schedule_device SET notification_type = 2';
 			$result = $mysqli->query($query);	
 		}
+
+		//Add column sensor_type in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'sensor_type'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD sensor_type smallint(6) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add sensor_type column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET sensor_type = 0';
+			$result = $mysqli->query($query);	
+		}
+
+		//Add column temp_tag in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'temp_tag'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD temp_tag varchar(256) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add temp_tag column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET temp_tag = ""';
+			$result = $mysqli->query($query);	
+		}
+
+		//Add column humidity_tag in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'humidity_tag'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD humidity_tag varchar(256) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add humidity_tag column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET humidity_tag = ""';
+			$result = $mysqli->query($query);	
+		}
 		
+		//Add column wind_tag in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'wind_tag'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD wind_tag varchar(256) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add wind_tag column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET wind_tag = ""';
+			$result = $mysqli->query($query);	
+		}
+
+		//Add column windgust_tag in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'windgust_tag'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD windgust_tag varchar(256) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add windgust_tag column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET windgust_tag = ""';
+			$result = $mysqli->query($query);	
+		}
+
+		//Add column raintoday_tag in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'raintoday_tag'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD raintoday_tag varchar(256) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add raintoday_tag column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET raintoday_tag = ""';
+			$result = $mysqli->query($query);	
+		}
+
+		//Add column url_counter in table sensors_shared if it doesn't exist already
+		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."sensors_shared LIKE 'url_counter'");
+		$exists = (mysqli_num_rows($result))?TRUE:FALSE;
+		if($exists == FALSE)
+		{
+			$query = 'ALTER TABLE '.$db_prefix.'sensors_shared ADD url_counter bigint(20) NOT NULL';
+			$result = $mysqli->query($query);
+			echo "<p>Add url_counter column in table futelldus_sensors_shared: " . $result . "</p>";
+			$query = 'UPDATE '.$db_prefix.'sensors_shared SET url_counter = 1';
+			$result = $mysqli->query($query);	
+		}
+	
 		//Add column notification_type in table schedule if it doesn't exist already
 		$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix."schedule LIKE 'notification_type'");
 		$exists = (mysqli_num_rows($result))?TRUE:FALSE;

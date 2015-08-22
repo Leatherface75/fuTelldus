@@ -134,48 +134,102 @@
 		    	echo "<h4 style='margin-top:40px;'>{$lang['Shared sensors']}</h4>";
 
 		    	while($row = $result->fetch_array()) {
+						$sensorID = trim($row['share_id']);
+						
+						$urlCount = $row['url_counter'];
+						$urlCount = $urlCount+1;
+						$sensorUrl = str_replace("{counter}", $urlCount, $row['url']);
+						$sensorUrl = str_replace("{rand}", mt_rand(), $sensorUrl);
+						
+						if ($row['sensor_type']==1) { // simple json (result is serialized and defined json tag is only expected to be exist once in the json)
+							//Update url counter
+							$query = "UPDATE ".$db_prefix."sensors_shared SET 
+										url_counter=".$urlCount." 
+										WHERE share_id='".$row['share_id']."'";
+							$tmp_result = $mysqli->query($query);
+							
+							//Call shared sensor
+							$curl = curl_init($sensorUrl);
+							curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+							$json = curl_exec($curl);
+							curl_close($curl);
+								
+							$jsonArr = json_decode(utf8_encode($json), true);
+							$sensorName = ""; //$row['description'];
+					    	$sensorLoc = "";
+					    	$sensorTemp = $jsonArr['temp'];
+							$sensorHumidity = $jsonArr['hum'] . "%";
+							$sensorUpd = $jsonArr['date'];
+						} else if ($row['sensor_type']==2) {  //weather-display.com software
+								// list of sensors http://www.weather-display.com/index3.php (add clientraw.txt?{counter} to sensor url)
+								//Update url counter
+								$query = "UPDATE ".$db_prefix."sensors_shared SET 
+										url_counter=".$urlCount." 
+										WHERE share_id='".$row['share_id']."'";
+								$tmp_result = $mysqli->query($query);
+								
+								$curl = curl_init($sensorUrl);
+								curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+								$json = curl_exec($curl);
+								curl_close($curl);
 
-			    	$xmlData = simplexml_load_file($row['url']);
-
-    	            echo "<div class='sensor-blocks well' onclick=\"location.href='?page=sensors_data&id=$sensorID';\" style='cursor:pointer;'>";
+								$wdArr = explode(" ", utf8_encode($json));
+								$sensorName = ""; //$row['description'];
+					    	$sensorLoc = "";
+					    	$sensorWindLatest = $wdArr[84];
+					    	$sensorWindGustMaxToday = $wdArr[71];
+					    	$sensorAvgWind10min = $wdArr[158];
+					    	$sensorRainToday = $wdArr[7];
+					    	
+					    	$sensorTemp = $wdArr[4] . "&deg;";
+								$sensorHumidity = $wdArr[5] . "%";
+								$sensorDate = explode("/", $wdArr[74]); // '17/08/2015'
+								$unixTime = mktime($wdArr[29], $wdArr[30], $wdArr[31], $sensorDate[1], $sensorDate[0], $sensorDate[2]);
+								$sensorUpd = "<abbr class=\"timeago\" title='".date("c", $unixTime)."'>".date("Y-m-d H:i", $unixTime)."</abbr>";
+							
+						} else { //From another fuTelldus site
+								$xmlData = simplexml_load_file($sensorUrl);
+								$sensorName = $xmlData->sensor->name;
+					    	$sensorLoc = $xmlData->sensor->location;
+					    	$sensorTemp = $xmlData->sensor->temp . "&deg;C";
+								$sensorHumidity = $xmlData->sensor->humidity . "%";
+								$sensorUpd = "<abbr class=\"timeago\" title='".date("c", trim($xmlData->sensor->lastUpdate))."'>".date("Y-m-d H:i", trim($xmlData->sensor->lastUpdate))."</abbr>";
+						}
+				
+			    
+									echo "<div class='sensor-blocks well' onclick=\"location.href='?page=sensors_data_shared&id=". $row['share_id']."';\" style='cursor:pointer;'>";
 
 		            	echo "<div class='sensor-name'>";
 		            		echo $row['description'];
 		            	echo "</div>";
-
-		            	echo "<div class='sensor-location'>";
-		            		echo "<img src='images/location.png' alt='icon' />";
-		            		echo $xmlData->sensor->location . " (".$xmlData->sensor->name.")";
-		            	echo "</div>";
-
+									
+									if ($sensorName != "") {
+			            	echo "<div class='sensor-location'>";
+			            		echo "<img src='images/location.png' alt='icon' />";
+			            		echo $sensorLocation . " (".$sensorName.")";
+			            	echo "</div>";
+									}
+									
 		            	echo "<div class='sensor-temperature'>";
 		            		echo "<img src='images/therm.png' alt='icon' />";
-		            		echo $xmlData->sensor->temp . "&deg;";
+		            		echo $sensorTemp;
 		            	echo "</div>";
 
-		            	if ($xmlData->sensor->humidity > 0) {
+		            	if ($sensorHumidity > 0) {
 		            		echo "<div class='sensor-humidity'>";
 			            		echo "<img src='images/water.png' alt='icon' />";
-			            		echo $xmlData->sensor->humidity . "%";
+			            		echo $sensorHumidity;
 			            	echo "</div>";
 		            	}
 
 		            	echo "<div class='sensor-timeago'>";
-		            		echo "<abbr class=\"timeago\" title='".date("c", trim($xmlData->sensor->lastUpdate))."'>".date("Y-m-d H:i", trim($xmlData->sensor->lastUpdate))."</abbr>";
+		            	echo $sensorUpd;
 		            	echo "</div>";
 
 		            echo "</div>";
 			    }
 			}
 		echo "</div>";
-
-
-
 	echo "</div>";
-
-
-
-
-
 
 ?>

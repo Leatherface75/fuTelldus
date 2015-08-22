@@ -168,46 +168,6 @@
 
 
 
-	/* Save telldus config
-	--------------------------------------------------------------------------- */
-	/*
-	if ($action == "saveTelldusConfig") {
-
-		// Get POST data
-		$public_key = clean($_POST['public_key']);
-		$private_key = clean($_POST['private_key']);
-		$token_key = clean($_POST['token_key']);
-		$token_secret_key = clean($_POST['token_secret_key']);
-
-		if (!empty($public_key)) {
-			$query = "UPDATE ".$db_prefix."config SET config_value='".$public_key."' WHERE config_name LIKE 'telldus_public_key'";
-			$result = $mysqli->query($query);
-		}
-
-		if (!empty($private_key)) {
-			$query = "UPDATE ".$db_prefix."config SET config_value='".$private_key."' WHERE config_name LIKE 'telldus_private_key'";
-			$result = $mysqli->query($query);
-		}
-
-		if (!empty($token_key)) {
-			$query = "UPDATE ".$db_prefix."config SET config_value='".$token_key."' WHERE config_name LIKE 'telldus_token'";
-			$result = $mysqli->query($query);
-		}
-
-		if (!empty($token_secret_key)) {
-			$query = "UPDATE ".$db_prefix."config SET config_value='".$token_secret_key."' WHERE config_name LIKE 'telldus_token_secret'";
-			$result = $mysqli->query($query);
-		}
-
-
-		// Redirect
-		header("Location: ?page=settings&view=telldus_config&msg=01");
-		exit();
-
-	}
-	*/
-
-
 
 
 
@@ -280,16 +240,47 @@
 	--------------------------------------------------------------------------- */
 	if ($action == "addSensorFromXML") {
 		// Get POST data
+		$url_source = clean($_POST['sensorSource']);
 		$description = clean($_POST['description']);
 		$xml_url = clean($_POST['xml_url']);
+		$humTag = clean($_POST['hum_tag']);
+		$tempTag = clean($_POST['temp_tag']);
+		$windTag = clean($_POST['wind_tag']);
+		$windGustTag = clean($_POST['windgust_tag']);
+		$rainTodayTag = clean($_POST['raintoday_tag']);
+
+		if ($url_source == 2) {
+			// fix and add clientraw.txt	
+			if (strpos($xml_url, 'clientraw.txt') == false) {
+				if (substr($xml_url, -1) !==  '/') { //url ends with a /
+					$urlPath =  parse_url($xml_url, PHP_URL_PATH);
+					$urlFile = basename($urlPath); 
+					if (strpos($urlFile, '.') == false) { //not a file, add / to close path						
+						$xml_url=$xml_url . "/";
+					} else { //ends with file, remove file part
+						$xml_url=str_replace($urlFile, "", $xml_url);
+					}
+				}
+				$xml_url = $xml_url . "clientraw.txt?_={counter}";
+			} else {
+				$xml_url = $xml_url . "?_={counter}";
+			}
+		}
 
 
 		// Insert telldus config
 		$query = "INSERT INTO ".$db_prefix."sensors_shared SET 
 					user_id='".$user['user_id']."', 
+					sensor_type ='". $url_source ."',
 					description='".$description."', 
+					humidity_tag='".$humTag."',
+					temp_tag='".$tempTag."',
+					wind_tag='".$windTag."',
+					windgust_tag='".$windGustTag."',
+					raintoday_tag='".$rainTodayTag."',
 					url='".$xml_url."', 
 					disable='". 0 ."'";
+
 		$result = $mysqli->query($query);
 
 		// Redirect

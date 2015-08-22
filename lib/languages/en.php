@@ -32,7 +32,13 @@ $lang = array(
 	"DefaultLanguage" => "Default language",
 	"DefaultLanguageDesc" => "Used as backup, e.g. used for email notificaions since there is no user logged in",		
 	"NotificationType" => "Notification type",		
-	
+	"HasChangeValueTo" => "has changed value to",
+	"HasValue" => "has the value",
+	"Source" => "Source",
+	"WindNow" => "Wind now",
+	"WindGustToday" => "Max wind gust today",
+	"RainToday" => "Rain today",
+
 	// Navigation
 	"Home" => "Home",
 	"Sensors" => "Sensors",

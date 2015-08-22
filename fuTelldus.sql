@@ -157,9 +157,15 @@ CREATE TABLE IF NOT EXISTS `futelldus_sensors_shared` (
   `share_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `description` varchar(256) NOT NULL,
-  `url` varchar(256) NOT NULL,
   `show_in_main` tinyint(4) NOT NULL,
-  `disable` tinyint(4) NOT NULL COMMENT '0=view, 1=disabled'
+  `disable` tinyint(4) NOT NULL COMMENT '0=view, 1=disabled',
+  `sensor_type` smallint(6) NOT NULL COMMENT '0=fuTelldus public sensor, 1=simple json',  
+  `temp_tag` varchar(256) NOT NULL,
+  `humidity_tag` varchar(256) NOT NULL
+  `wind_tag` varchar(256) NOT NULL
+  `windgust_tag` varchar(256) NOT NULL
+  `raintoday_tag` varchar(256) NOT NULL
+  `url_counter` bigint(20) NOT NULL, 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

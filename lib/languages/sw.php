@@ -32,6 +32,10 @@ $lang = array(
 	"PageLayoutDesc" => "Välj vilket utseende du vill ha på fuTelldus siten",
 	"DefaultLanguage" => "Basspråk",
 	"DefaultLanguageDesc" => "Används som backup, t.ex vid epost notifieringar eftersom det inte finns någon användare inloggad då.",	
+	"Source" => "Källa",
+	"WindNow" => "Vind nu",
+	"WindGustToday" => "Max vindpust idag",
+	"RainToday" => "Regn idag",
 		
 	// Navigation
 	"Home" => "Hem",
@@ -236,6 +240,8 @@ $lang = array(
 	"Now" => "Nu",
 	"Action" => "Action",
 	"NotificationType" => "Typ av notifiering",	
+	"HasChangeValueTo" => "har ändrat värde till",
+	"HasValue" => "har värdet",
 	
 		// send warning IF temperature IS more/less THAN   / FOR sensor ...
 		"If" => "om",

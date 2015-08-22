@@ -28,12 +28,18 @@ $lang = array(
 	"AllTime" => "Alltid",
 	"Custom" => "Satt seg",
 	"Display" => "Vis",
-	"PageLayout" => "Page layout",
+	"PageLayout" => "Utseende",
 	"PageLayoutDesc" => "Defines what base layout you want on this fuTelldus site",
 	"DefaultLanguage" => "Standardspråk",
 	"DefaultLanguageDesc" => "Used as backup, e.g. used for email notificaions since there is no user logged in",	
-	"NotificationType" => "Notification type",	
-		
+	"NotificationType" => "Varslingstype",	
+	"HasChangeValueTo" => "har endret verdien til",
+	"HasValue" => "har verdi",	
+	"Source" => "Källa",
+	"WindNow" => "Wind now",
+	"WindGustToday" => "Max wind gust today",
+	"RainToday" => "Rain today",
+
 	// Navigation
 	"Home" => "Hjem",
 	"Sensors" => "Sensorer",
