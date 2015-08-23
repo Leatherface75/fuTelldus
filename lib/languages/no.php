@@ -39,6 +39,15 @@ $lang = array(
 	"WindNow" => "Wind now",
 	"WindGustToday" => "Max wind gust today",
 	"RainToday" => "Rain today",
+	"WindGustNow" => "Wind gust",
+	"WindAvg10Min" => "Avg wind last 10 min",
+	"WindChill" => "Wind chill (only different if less than 10 degrees)",
+	"RainYesterday" => "Rain yesterday",
+	"RainMonth" => "Rain this month",
+	"RainYear" => "Rain this year",
+	"TempMin" => "Min temperature today",
+	"TempMax" => "Max temperature today",
+	"Stats" => "Statistics",
 
 	// Navigation
 	"Home" => "Hjem",

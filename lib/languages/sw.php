@@ -34,8 +34,19 @@ $lang = array(
 	"DefaultLanguageDesc" => "Används som backup, t.ex vid epost notifieringar eftersom det inte finns någon användare inloggad då.",	
 	"Source" => "Källa",
 	"WindNow" => "Vind nu",
-	"WindGustToday" => "Max vindpust idag",
+	"WindGustToday" => "Max vindby idag",
+	"WindGustNow" => "Vindbyar",
+	"WindAvg10Min" => "Genomsnittsvind senaste 10 min",
+	"WindChill" => "Vindtemperatur (skiljer endast om under 10 grader)",
 	"RainToday" => "Regn idag",
+	"RainYesterday" => "Regn igår",
+	"RainMonth" => "Regn denna månad",
+	"RainYear" => "Regn i år",
+	"TempMin" => "Lägsta temperatur idag",
+	"TempMax" => "Högsta temperatur idag",
+	"Stats" => "Statistik",
+		
+//	"" => "",
 		
 	// Navigation
 	"Home" => "Hem",

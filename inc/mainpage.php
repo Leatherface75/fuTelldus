@@ -19,6 +19,7 @@
 		margin-right:40px;
 		margin-bottom:20px;
 		min-width:200px;
+		max-width:300px;
 		border:0px solid red;
 	}
 
@@ -44,8 +45,13 @@
 		font-size:40px; display:inline-block; valign:top; margin-left:15px; margin-top:6px; margin-bottom:6px; padding-top:10px; border:0px solid red;
 	}
 
-	.sensors-wrap .sensor-humidity {
-		font-size:20px; display:inline-block; valign:top; margin-left:15px; padding-top:10px; border:0px solid red;
+	.sensors-wrap .sensor-small {
+		font-size:20px; 
+		display:inline-block; 
+		valign:top; 
+		margin-left:20px; 
+		padding-top:10px; 
+		border:0px solid red;
 	}
 
 	.sensors-wrap .sensor-timeago {
@@ -106,7 +112,7 @@
             	echo "</div>";
 
             	if ($sensorData['humidity_value'] > 0) {
-            		echo "<div class='sensor-humidity'>";
+            		echo "<div class='sensor-small'>";
 	            		echo "<img src='images/water.png' alt='icon' />";
 	            		echo "{$sensorData['humidity_value']}%";
 	            	echo "</div>";
@@ -156,9 +162,11 @@
 								
 							$jsonArr = json_decode(utf8_encode($json), true);
 							$sensorName = ""; //$row['description'];
-					    	$sensorLoc = "";
-					    	$sensorTemp = $jsonArr['temp'];
+					    $sensorLoc = "";
+					    $sensorTemp = $jsonArr['temp'];
 							$sensorHumidity = $jsonArr['hum'] . "%";
+							$sensorWindLatest = "";
+					    $sensorRainToday = "";
 							$sensorUpd = $jsonArr['date'];
 						} else if ($row['sensor_type']==2) {  //weather-display.com software
 								// list of sensors http://www.weather-display.com/index3.php (add clientraw.txt?{counter} to sensor url)
@@ -176,11 +184,10 @@
 								$wdArr = explode(" ", utf8_encode($json));
 								$sensorName = ""; //$row['description'];
 					    	$sensorLoc = "";
-					    	$sensorWindLatest = $wdArr[84];
-					    	$sensorWindGustMaxToday = $wdArr[71];
-					    	$sensorAvgWind10min = $wdArr[158];
-					    	$sensorRainToday = $wdArr[7];
-					    	
+//					    	$sensorWindGustMaxToday = round($wdArr[71]*0.5144, 1). " m/s";
+    						$sensorWindLatest = round($wdArr[158]*0.5144, 1) . " m/s";
+    						$sensorRainToday = $wdArr[7] . " mm";
+    	
 					    	$sensorTemp = $wdArr[4] . "&deg;";
 								$sensorHumidity = $wdArr[5] . "%";
 								$sensorDate = explode("/", $wdArr[74]); // '17/08/2015'
@@ -191,6 +198,8 @@
 								$xmlData = simplexml_load_file($sensorUrl);
 								$sensorName = $xmlData->sensor->name;
 					    	$sensorLoc = $xmlData->sensor->location;
+					    	$sensorWindLatest = "";
+					    	$sensorRainToday = "";
 					    	$sensorTemp = $xmlData->sensor->temp . "&deg;C";
 								$sensorHumidity = $xmlData->sensor->humidity . "%";
 								$sensorUpd = "<abbr class=\"timeago\" title='".date("c", trim($xmlData->sensor->lastUpdate))."'>".date("Y-m-d H:i", trim($xmlData->sensor->lastUpdate))."</abbr>";
@@ -216,12 +225,26 @@
 		            	echo "</div>";
 
 		            	if ($sensorHumidity > 0) {
-		            		echo "<div class='sensor-humidity'>";
+		            		echo "<div class='sensor-small'>";
 			            		echo "<img src='images/water.png' alt='icon' />";
 			            		echo $sensorHumidity;
 			            	echo "</div>";
 		            	}
 
+		            	if ($sensorWindLatest !== "") {
+		            		echo "<div class='sensor-small'>";
+			            		echo " <img src='images/wind.png' alt='icon' />";
+			            		echo $sensorWindLatest;
+			            	echo "</div>";
+		            	}
+		            	
+		            	if ($sensorRainToday !== "") {
+		            		echo "<div class='sensor-small'>";
+			            		echo " <img src='images/rain.png' alt='icon' />";
+			            		echo $sensorRainToday;
+			            	echo "</div>";
+		            	}
+		            	
 		            	echo "<div class='sensor-timeago'>";
 		            	echo $sensorUpd;
 		            	echo "</div>";
