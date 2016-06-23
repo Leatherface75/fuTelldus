@@ -25,7 +25,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="description" content="">
     <meta name="author" content="">
-
+	<link rel="shortcut icon" href="favicon.png?rel=1.1">
 
 	
 
@@ -142,7 +142,7 @@
 		<div class="container">
 		<div class="masthead hidden-phone">
 			
-			
+			<?php if ($config['navbar_layout'] != "grey") { ?>
 			<nav class="navbar navbar-inverse">
 				<div class="navbar-inner">
 					<div class="container">
@@ -195,6 +195,65 @@
 					</div>
 				</div>
 			</nav><!-- /.navbar -->
+			
+			<?php } else { ?>
+			
+						<h3 class="muted">
+				<a href='index.php'>
+					<img style='height:30px;' src="images/logo.png" alt='logo' />
+					<?php echo $config['pagetitle']; ?>
+				</a>
+			</h3>
+
+			<div style="float:right; margin-top:-45px; margin-right:15px;">
+				<div class="btn-group">					
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						<?php
+							echo $user['mail']; 
+						?>
+						<span class="caret"></span>
+					</a>
+
+					<ul class="dropdown-menu">
+						<?php
+							echo "<li><a href='?page=settings&view=user'>".$lang['My profile']."</a></li>";
+							echo "<li><a href='./public/index.php'>".$lang['View public page']."</a></li>";
+							echo "<li><a href='./login/logout.php'>".$lang['Log out']."</a></li>";
+						?>
+					</ul>
+				</div>
+
+			</div>
+			
+			<div class="navbar">
+				<div class="navbar-inner">
+					<div class="container">
+						<ul class="nav">
+
+							<?php
+								// Set menuelements as active
+								if (!isset($_GET['page']) || $_GET['page'] == "mainpage") $navMainpage_active = "active";
+								elseif (substr($_GET['page'], 0, 7) == "sensors") $navSensors_active = "active";
+								elseif (substr($_GET['page'], 0, 7) == "devices") $navDevices_active = "active";
+								elseif (substr($_GET['page'], 0, 5) == "chart") $navChart_active = "active";
+								elseif (substr($_GET['page'], 0, 8) == "settings") $navSettings_active = "active";
+							?>
+
+
+							<li class="<?php echo $navMainpage_active; ?>"><a href="index.php"><?php echo $lang['Home']; ?></a></li>
+							<li class="<?php echo $navSensors_active; ?>"><a href="?page=sensors"><?php echo $lang['Sensors']; ?></a></li>
+							<li class="<?php echo $navDevices_active; ?>"><a href="?page=devices"><?php echo $lang['Lights']; ?></a></li>
+							<li class="<?php echo $navChart_active; ?>"><a href="?page=chart"><?php echo $lang['Chart']; ?></a></li>
+							<li class='<?php echo $navSettings_active; ?>'><a href="?page=settings"><?php echo $lang['Settings']; ?></a></li>
+						</ul>
+					</div>
+				</div>
+			</div><!-- /.navbar -->
+
+			
+			<?php } ?>
+
+			
 		</div>
 		</div>
 		<div class='visible-phone' style='height: 40px;'></div>

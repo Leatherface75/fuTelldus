@@ -84,10 +84,15 @@
 			if (($row['repeat_alert'] * 60) < $timeSinceLastWarning) $repeatNotification = true;
 			else $repeatNotification = false;
 
+			// Define notification type text
+			if ($row['notification_type'] == 1)
+				$notifyType = $lang['Info'];
+			else 
+				$notifyType = $lang['Warning'];
 
 
-
-
+			echo "<br><br>Sensor name: " . $row['name'];
+			
 			/* Check for device action
 			--------------------------------------------------------------------------- */
 
@@ -135,7 +140,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['Low']} {$lang['Temperature']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['Low']} {$lang['Temperature']}";
 				    		$mailMessage = "{$lang['Notification mail low temperature']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -168,7 +173,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['Low']} {$lang['Humidity']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['Low']} {$lang['Humidity']}";
 				    		$mailMessage = "{$lang['Notification mail low humidity']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -206,7 +211,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['High']} {$lang['Temperature']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['High']} {$lang['Temperature']}";
 				    		$mailMessage = "{$lang['Notification mail high temperature']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -238,7 +243,7 @@
 			    			$scheduleRun = true;
 
 				    		// Get and replace variables in mail message
-				    		$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$lang['High']} {$lang['Humidity']}";
+				    		$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$lang['High']} {$lang['Humidity']}";
 				    		$mailMessage = "{$lang['Notification mail high humidity']}";
 
 				    		$mailMessage = str_replace("%%sensor%%", $row['name'], $mailMessage);
@@ -267,7 +272,7 @@
 		    /* IF warning = true
 			--------------------------------------------------------------------------- */
 		    if ($scheduleRun) {
-			
+				echo "<br><b>Action taken!</b>";
 		    	// Update sent timestamp
 			    $queryTimestamp = "UPDATE ".$db_prefix."schedule SET last_warning='".time()."' WHERE notification_id='".$row['notification_id']."'";
 				$resultTimestamp = $mysqli->query($queryTimestamp);
@@ -286,12 +291,10 @@
 					// Use PushOver curl
 					sendPush("{$telldusConf2['push_app']}", "{$telldusConf2['push_user']}", "{$mailSubject}", "{$pushMessage}");
 					}
+			} else {
+				echo "<br>No action taken this time!";
 			}
-
-
-
 				
-
 
     	} //end-while
     } //end-numRows
@@ -311,57 +314,116 @@
 
     if ($numRows2 > 0) {
     	while($row4 = $result6->fetch_array()) {
-		if ($row4['send_to_mail'] == 1 || $row4['send_push'] == 1) {
-		
-    	/* Connect to telldus
-		--------------------------------------------------------------------------- */
-    	$query2 = "SELECT * FROM ".$db_prefix."users_telldus_config WHERE user_id='{$row4['user_id']}'";
-  		$result2 = $mysqli->query($query2);
-  		$telldusConf = $result2->fetch_array();
-		
-		$getFrom = strtotime('- 5 minutes'); //5 minutes back
-		$getTo = time(); //Until now
-		
-		$consumer = new HTTP_OAuth_Consumer($telldusConf['public_key'], $telldusConf['private_key'], $telldusConf['token'], $telldusConf['token_secret']);
+				    	/* Check for warning last sent
+			--------------------------------------------------------------------------- */
+			if ($row4['send_to_mail'] == 1 || $row4['send_push'] == 1 || $row4['action_device'] > 0 ) {
+			
+				/* Connect to telldus
+				--------------------------------------------------------------------------- */
+				$query2 = "SELECT * FROM ".$db_prefix."users_telldus_config WHERE user_id='{$row4['user_id']}'";
+				$result2 = $mysqli->query($query2);
+				$telldusConf = $result2->fetch_array();
+				
+				$consumer = new HTTP_OAuth_Consumer($telldusConf['public_key'], $telldusConf['private_key'], $telldusConf['token'], $telldusConf['token_secret']);
 
-		$params = array('id'=> $row4['device_id'], 'from' => $getFrom, 'to' => $getTo);
-		$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/history', $params, 'GET');
-		
+				$params = array('id'=> $row4['device_id'], 'supportedMethods'=> 3);
+				$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/info', $params, 'GET');
 
-		$xmlString = $response->getBody();
-		$xmldata = new SimpleXMLElement($xmlString);
-	    
-
-				// Send mail
-				if (count($xmldata->history) > 0) {
-					if ($row4['send_to_mail'] == 1) {
-				    	$mailSubject = "{$config['pagetitle']}: {$lang['Warning']}: {$row4['device_id']} {$row4['name']} {$lang['Device action']}";
-				    	$mailMessage = "{$lang['Warning']} {$lang['Schedule']}.";
-
-					// Use mail-function in /lib/php_functions/global.functions.inc.php
-					if (!empty($row4['notification_mail_primary'])) sendMail($row4['notification_mail_primary'], $mailSubject, $mailMessage);
-					if (!empty($row4['notification_mail_secondary'])) sendMail($row4['notification_mail_secondary'], $mailSubject, $mailMessage);
+				$xmlString = $response->getBody();
+				$xmldata = new SimpleXMLElement($xmlString);
+				
+				if ($row4['notification_type'] == 1)
+					$notifyType = $lang['Info'];
+				else 
+					$notifyType = $lang['Warning'];
+						
+				if (($row4['trigger_type'] == 1) && ($row4['trigger_state'] == 1)) {  //If trigger is 'Device change state to On'
+					if (($xmldata->state == 1) && ($row4['device_state'] == 2)) { 	// current state is On, last state was Off
+						$take_action = true;
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOn']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasChangeValueTo']} {$lang['On']}!! ";
 					}
-				// Send push
-					if ($row4['send_push'] == 1 && !empty($telldusConf['push_user']) && !empty($telldusConf['push_app'])) {
-				    	$pushMessage = "{$row4['push_message']}";
-					//$mess = "({$row4['name']}){$row4['device_id']}";
-
-				    	//$pushMessage = str_replace("%%device%%", $mess, $pushMessage);
-					$pushTitle = "{$config['pagetitle']}: {$lang['Warning']} {$lang['Schedule']}.";
-					// Use PushOver curl
-					sendPush("{$telldusConf['push_app']}", "{$telldusConf['push_user']}", "{$pushTitle}", "{$pushMessage}");
+				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 1)) {  //If trigger is 'Device has state On'
+					if ($xmldata->state == 1) { 	// current state is On
+						$take_action = true;
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOn']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasValue']} {$lang['On']}!! ";
+					}		
+				} else if (($row4['trigger_type'] == 1) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device change to state Off'
+					if (($xmldata->state == 2) && ($row4['device_state'] == 1)) { 	// current state is Off, last state was On
+						$take_action = true;
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceTurnedOff']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasChangeValueTo']} {$lang['Off']}!! ";
+					}		
+				} else if (($row4['trigger_type'] == 2) && ($row4['trigger_state'] == 2)) {  //If trigger is 'Device has state Off'
+					if ($xmldata->state == 2) { 	// current state is Off
+						$take_action = true;
+						$mailSubject = "{$config['pagetitle']}: {$notifyType}: {$row4['name']} {$lang['DeviceIsOff']}";
+						$mailMessage = "{$notifyType}: {$row4['name']} {$lang['HasValue']} {$lang['Off']}!! ";
 					}
 				}
 
-
-
+				echo "<br><br>Device name: " . $row4['name'];
 				
+				if ($take_action) {
+					
+					// Check for warning last sent
+					$timeSinceLastWarning = (time() - $row4['last_warning']);
 
-		} //end-if
-	} //end-while
+					// Check if notification-repeat-state
+					if (($row4['repeat_alert'] * 60) < $timeSinceLastWarning) 
+						$repeatDeviceNotification = true;
+					else 
+						$repeatDeviceNotification = false;
+
+					echo "<br><b>Action taken!</b>";
+
+					
+					// Send mail
+					if ($row4['send_to_mail'] == 1 && $repeatDeviceNotification == true) {
+						$queryTimestamp = "UPDATE ".$db_prefix."schedule_device SET last_warning='".time()."' WHERE notification_id='".$row4['notification_id']."'";
+						$resultTimestamp = $mysqli->query($queryTimestamp);			
+
+						//$mailMessage = "{$notifyType}: {$lang['Schedule']}.";
+							
+						// Use mail-function in /lib/php_functions/global.functions.inc.php
+						if (!empty($row4['notification_mail_primary'])) sendMail($row4['notification_mail_primary'], $mailSubject, $mailMessage);
+						if (!empty($row4['notification_mail_secondary'])) sendMail($row4['notification_mail_secondary'], $mailSubject, $mailMessage);
+					}
+
+					// Send push
+					if ($row4['send_push'] == 1 && !empty($telldusConf['push_user']) && !empty($telldusConf['push_app'])) {
+						$pushMessage = "{$row4['push_message']}";
+						//$mess = "({$row4['name']}){$row4['device_id']}";
+
+						//$pushMessage = str_replace("%%device%%", $mess, $pushMessage);
+						$pushTitle = "{$config['pagetitle']}: {$notifyType} {$lang['Schedule']}.";
+						// Use PushOver curl
+						sendPush("{$telldusConf['push_app']}", "{$telldusConf['push_user']}", "{$pushTitle}", "{$pushMessage}");
+					}	
+
+					if ($row4['action_device'] > 0) { //action defined
+						$params = array('id'=> $row4['action_device']);							
+						if ($row4['action_device_set_state'] == 0)
+							$reply = $consumer->sendRequest(constant('REQUEST_URI').'/device/turnOff', $params, 'GET');
+						else 
+							$response = $consumer->sendRequest(constant('REQUEST_URI').'/device/turnOn', $params, 'GET');
+					}
+						
+				} else {
+					echo "<br>No action this time!";
+				} //if (take_action)
+			} //end-if
+			
+			$query = "UPDATE ".$db_prefix."schedule_device SET 
+					device_state=".$xmldata->state." 
+					WHERE device_id='".$row4['device_id']."'";
+			$result = $mysqli->query($query);
+
+		} //end-while
     } //end-numRows
+	
+	echo "<br><br>Schedule script completed";
+
     
-
-
 ?>

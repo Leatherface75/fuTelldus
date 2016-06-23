@@ -7,7 +7,47 @@
 	*/
 	
 $lang = array(
-	
+
+	"TriggerState_ChangeState" => "byter till",
+	"TriggerState_HasState" => "har värdet",
+	"DeviceTurnedOn" => "har satts på",
+	"DeviceTurnedOff" => "har stängts av",
+	"DeviceIsOn" => "är på",
+	"DeviceIsOff" => "är av",
+
+	"Current" => "Just nu",
+	"Last12h" => "Senaste 12 timmarna",
+	"Last24h" => "Senaste 24 timmarna",
+	"Today" => "Idag",
+	"ThisWeek" => "Förra veckan",
+	"LastWeek" => "Denna veckan",
+	"ThisMonth" => "Denna månaden",
+	"LastMonth" => "Förra månaden",
+	"Last6Months" => "Senaste halvåret",
+	"LastYear" => "I år",
+	"AllTime" => "Alltid",
+	"Custom" => "Ange själv",
+	"Display" => "Visa",
+	"PageLayout" => "Utseende",
+	"PageLayoutDesc" => "Välj vilket utseende du vill ha på fuTelldus siten",
+	"DefaultLanguage" => "Basspråk",
+	"DefaultLanguageDesc" => "Används som backup, t.ex vid epost notifieringar eftersom det inte finns någon användare inloggad då.",	
+	"Source" => "Källa",
+	"WindNow" => "Vind nu",
+	"WindGustToday" => "Max vindby idag",
+	"WindGustNow" => "Vindbyar",
+	"WindAvg10Min" => "Genomsnittsvind senaste 10 min",
+	"WindChill" => "Vindtemperatur (skiljer endast om under 10 grader)",
+	"RainToday" => "Regn idag",
+	"RainYesterday" => "Regn igår",
+	"RainMonth" => "Regn denna månad",
+	"RainYear" => "Regn i år",
+	"TempMin" => "Lägsta temperatur idag",
+	"TempMax" => "Högsta temperatur idag",
+	"Stats" => "Statistik",
+		
+//	"" => "",
+		
 	// Navigation
 	"Home" => "Hem",
 	"Sensors" => "Sensorer",
@@ -203,13 +243,17 @@ $lang = array(
 	"Value" => "Värde",
 	"Cancel" => "Avbryt",
 	"Warning" => "Varning",
+	"Info" => "Info",
 	"High" => "Hög",
 	"Low" => "Låg",
 	"Primary" => "Primär",
 	"Secondary" => "Sekundär",
 	"Now" => "Nu",
 	"Action" => "Action",
-
+	"NotificationType" => "Typ av notifiering",	
+	"HasChangeValueTo" => "har ändrat värde till",
+	"HasValue" => "har värdet",
+	
 		// send warning IF temperature IS more/less THAN   / FOR sensor ...
 		"If" => "om",
 		"Is" => "är",

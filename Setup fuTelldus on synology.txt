@@ -1,0 +1,47 @@
+﻿1. Activate web station and PHP (with error messages)
+2. Create the folder web/fuTelldus and copy all files to that folder
+3. Install PHPMyAdmin on your synology
+4. Open config.inc.php in PHPMyAdmin folder under /volume1/web/lib
+   Change $cfg['Servers'][$i]['AllowNoPassword'] = false; 
+   to  $cfg['Servers'][$i]['AllowNoPassword'] = true;
+5. Change access rights on config.inc.php to chmod 644
+
+6. Enter http://xxx.xxx.x.xx/phpMyAdmin/ (xxx.xxx.x.xx = ip to your synology) in your web browser and you should get a login popup
+7. Click OK without username and password and you should get into phpMyAdmin
+8. Logout and login with root as username and empty password
+   Comment: rekommendation to change and have a password set...
+9. Create a database called futelldus (in the tab named Databases and as Collation in the dropdown)
+10. Choose the database futelldus and choose tab import
+11. Click on choose file and choose the file fuTelldus.sql from web/fuTelldus on your Synology
+12. Click Run to import and create tables, indexes, etc
+13. Enter http://xxx.xxx.x.xx/fuTelldus and you should get following error message
+     ' Warning: mysqli::mysqli(): (28000/1045): Access denied for user 'USERNAME'@'localhost' (using password: YES) in /volume1/web/fuTelldus/lib/base.inc.php on line 18 Connect Error: 1045'
+
+14. Open web/fuTelldus/lib/config.inc.php and change to following
+	$username 	= "root"; 					// Mysql username
+	$password 	= ""; 					// Mysql password if defined
+	$db_name 	= "futelldus"; 				// Mysql DB
+	
+15. Open http://xxx.xxx.x.xx/fuTelldus/ and login with admin/admin
+16. Choose edit on your userprofile of the admin user and enter the telldus API keys which you can get on api.telldus.com 
+	Public key:	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	Private key:	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	Token:	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	Token secret:	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+17. Choose the tab Sensors and you might get the following error message:
+     'Warning: require_once(HTTP/OAuth/Consumer.php): failed to open stream: No such file or directory in /volume1/web/fuTelldus/inc/sensors.php on line 13 Fatal error: require_once(): Failed opening required 'HTTP/OAuth/Consumer.php' (include_path='.:/usr/syno/php/lib/php') in /volume1/web/fuTelldus/inc/sensors.php on line 13'
+18. Unpack PEAR_package_fuTelldus.zip in web/fuTelldus and upack it into same folder  (http://www.telldus.com/forum/viewtopic.php?t=3364&p=20107)
+    Comment: This is not the full OAuth extension since it is hard to install the full one on Synology. If OAuth support comes to synology, this step should be unnecessary)
+19. Enter sensors tab again and you might get an error 'Fatal error...', in that case you need to restart apache (or the synology station)
+20. Recommendation, create a new user and remove admin
+
+========== Setup Scheduling (needed to create shedules and temperature logging ============
+21. Create two shell scripts with the names cron_temp_log.sh and cron_schedule.sh in folder /volume1/web/fuTelldus/ with following content
+OBS: Important that the file has UNIX style EOL (End Of Line)
+
+22. Create new schedule events in synology scheduler (in control panel) to fetch temperatures and device states
+    Choose userdefined script
+    Script 1: Should run every 15 minutes with the command /volume1/web/fuTelldus/cron_temp_log_synology.sh and root as user (or someone with correct priviliges)
+    Script 2: Should run every 5 minutes with the command /volume1/web/fuTelldus/cron_schedule_synology.sh and root as user (or someone with correct priviliges)
+    OBS! If fuTelldus put somewhere else then in fuTelldus folder under the synology web folder, the two scripts must be changed!!

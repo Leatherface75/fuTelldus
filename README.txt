@@ -25,15 +25,21 @@ DEFAULT APPLICATION USER:
 
 UPGRADE:
 -------------------------------------------------------------------------------------------
+If you have latest version of CSOM fork or an androidemil fork from August 2015 following is needed:
+- Make backup
+- Copy all files except lib/config.inc.php
+- run db_update.php (only changes database if not already done)
+The good thing with this way of updgrading is that you don't loose your temparature history.
+
+
+If you have another version of fuTelldus follow the old instructions:
 There is no update-function avalible yet, so best practice for upgrade is to create new/replace all
 and start from scratch.
-
 	!!! REMEMBER TO TAKE BACKUP !!!
 
 	- Backup your DATABASE and FILES
 	- Start install from scratch
 	- Import temperature data you created backup from :-)
-
 
 
 
